@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>EcoOils HSSE Database Admin</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#e8ecef; --surface:#ffffff; --surface2:#f3f6f8; --ink:#13202b; --mute:#566874; --line:#cdd6dc;
+  --accent:#d9480f; --accent-ink:#ffffff; --ok:#17744a; --ok-bg:#dcf1e6; --off:#5d6b75; --off-bg:#e3e8ec; --bad:#b42318; --bad-bg:#fbe0dd; --wa:#1faa59;
+  --f-display:"Barlow Condensed","Arial Narrow",sans-serif; --f-body:"IBM Plex Sans",system-ui,sans-serif; --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0f171d; --surface:#17222a; --surface2:#1d2a33; --ink:#e7eef2; --mute:#93a4af; --line:#2c3b46;
+  --accent:#ff7a3d; --accent-ink:#1a0d05; --ok:#5fd29a; --ok-bg:#12382a; --off:#9aaab4; --off-bg:#24323b; --bad:#ff8f84; --bad-bg:#40191a; --wa:#3ddc84; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--f-body);padding:0 16px 40px}
+.wrap{max-width:1040px;margin:0 auto}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header.top{display:flex;gap:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;padding:20px 0 14px;border-bottom:3px solid var(--ink)}
+h1{font:700 clamp(26px,5vw,36px)/1 var(--f-display);letter-spacing:.02em;text-transform:uppercase;margin:0}
+.subt{font:500 12px var(--f-mono);color:var(--mute);margin-top:6px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;padding:6px 10px;cursor:pointer;font:500 12px var(--f-mono)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:500;text-decoration:none;line-height:1.2}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.small{padding:5px 10px;font-size:13px}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+input,select,textarea{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:80px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px;margin-bottom:14px}
+.panel h2{font:600 21px/1.1 var(--f-display);text-transform:uppercase;letter-spacing:.03em;margin:0 0 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.full{grid-column:1/-1}
+label.f{display:block;min-width:0}
+label.f>span{display:block;font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--mute);margin-bottom:4px}
+.gate{max-width:420px;margin:8vh auto 0}
+.msg{padding:10px 12px;border-radius:6px;margin:12px 0;background:var(--bad-bg);color:var(--bad);font-weight:500}
+.msg.ok{background:var(--ok-bg);color:var(--ok)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0 10px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+.stat .n{font:700 44px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.stat .l{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--mute);margin-top:4px}
+.stat.main{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.stat.main .l{color:var(--bg);opacity:.75}
+.ics{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.ic{display:flex;align-items:baseline;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:6px 12px;cursor:pointer}
+.ic[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent)}
+.ic b{font:700 22px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.ic span{font:500 12px var(--f-mono);color:var(--mute)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.toolbar input[type=search]{flex:1 1 200px}
+.toolbar select{width:auto}
+.person{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px;margin-bottom:8px;cursor:pointer;min-width:0}
+.person:hover{border-color:var(--ink)}
+.av{width:52px;height:52px;border-radius:50%;background:var(--surface2);border:1px solid var(--line);display:grid;place-items:center;font:700 20px var(--f-display);color:var(--mute);flex:none;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
+.av.big{width:96px;height:96px;font-size:34px}
+.pinfo{flex:1 1 auto;min-width:0}
+.nm{font-weight:600;overflow-wrap:anywhere}
+.pos{color:var(--mute);font-size:12.5px}
+.meta{font:500 12px var(--f-mono);color:var(--mute);margin-top:2px}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font:500 11.5px var(--f-mono);white-space:nowrap}
+.pill.onsite{background:var(--ok-bg);color:var(--ok)}
+.pill.left{background:var(--off-bg);color:var(--off)}
+.pill.bad{background:var(--bad-bg);color:var(--bad)}
+.acts{display:flex;gap:6px;align-items:center;flex:none}
+.ico{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;background:var(--surface);color:var(--ink);text-decoration:none;font:600 11px var(--f-mono)}
+.ico:hover{border-color:var(--ink)}
+.ico svg{width:19px;height:19px}
+.ico.wa{border-color:var(--wa)}
+.ico.wa svg{fill:var(--wa)}
+.ico.off{opacity:.35;pointer-events:none}
+.empty{padding:34px 16px;text-align:center;color:var(--mute)}
+.note{color:var(--mute);font-size:12.5px}
+.head{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin:16px 0}
+.head h2{font:700 30px/1 var(--f-display);margin:0;text-transform:uppercase}
+.tl{border-left:2px solid var(--line);margin-left:6px;padding-left:16px}
+.tl .it{position:relative;padding-bottom:12px}
+.tl .it::before{content:"";position:absolute;left:-23px;top:7px;width:9px;height:9px;border-radius:50%;background:var(--accent)}
+.tl b{display:block}
+.pre{white-space:pre-wrap;overflow-wrap:anywhere}
+dl.bio{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 18px;margin:0}
+dl.bio dt{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--mute)}
+dl.bio dd{margin:0;overflow-wrap:anywhere}
+.links{display:flex;gap:8px;flex-wrap:wrap}
+.soon{border-style:dashed;color:var(--mute)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:6px;z-index:9;max-width:90vw;font-weight:500}
+@media (max-width:560px){.person{flex-wrap:wrap}.acts{width:100%;justify-content:flex-end}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div id="toastbox"></div>
+<script>
+/* Same web app URL as index.html */
+const API = "https://script.google.com/macros/s/AKfycbzhdzryHX74sTpd71d1CA1tYd_jjnOCJ32t8JuOM_yL3Ww_RlNCZWGqMtqfSC-HJm8/exec";
+const DEFAULT_CC = "62";   /* numbers starting with 0 are treated as Indonesian */
+const ICS = ["GSB","WEN","KKS","PBS"];
+const WA_PATH = "M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z";
+
+const TX={
+en:{title:"EcoOils HSSE Database",sub:"Safety officers and managers of the implementation contractors",key:"Admin key",open:"Open",out:"Sign out",
+ onsite:"On site now",left:"Left site",nocv:"On site, no CV",total:"Profiles",search:"Search name, position, contractor",allSt:"All status",allPr:"All projects",project:"Project",stOn:"On site",stLeft:"Left",refresh:"Refresh",
+ bk:"Wrong admin key.",srv:"Could not reach the profile service. Check the web app link and try again.",nosetup:"Set the web app link in admin.html first.",none:"No profiles match.",
+ joined:"Joined",tenure:"Time on project",back:"All profiles",wa:"WhatsApp",mail:"Email",li:"LinkedIn",cv:"CV",folder:"Drive folder",
+ adminT:"Office record",status:"Status",join:"Date of joining the Project",end:"Date left",notes:"Office notes",save:"Save",saved:"Saved",reset:"Reset passcode",resetC:"Click again to reset",resetDone:"Passcode cleared. The person can set a new one.",
+ about:"About",quals:"Qualifications",exp:"Experience",edu:"Education",certs:"Certificates",bio:"Personal details",dob:"Date of birth",nat:"Nationality",city:"Home city",lang:"Languages",emg:"Emergency contact",
+ present:"Present",issued:"Issued",expires:"Expires",noCv:"No CV",updated:"Profile last updated",nonum:"No phone number",
+ soonT:"Coming next",soonB:"Leaving pack (write-up, email, certificate PDF) after you send the certificate format. Competency assessment after that.",days:"days",mo:"mo",yr:"yr"},
+id:{title:"EcoOils HSSE Database",sub:"Petugas dan manajer keselamatan kontraktor pelaksana",key:"Kunci admin",open:"Buka",out:"Keluar",
+ onsite:"Di lokasi",left:"Sudah keluar",nocv:"Di lokasi, tanpa CV",total:"Profil",search:"Cari nama, jabatan, kontraktor",allSt:"Semua status",allPr:"Semua proyek",project:"Proyek",stOn:"Di lokasi",stLeft:"Keluar",refresh:"Muat ulang",
+ bk:"Kunci admin salah.",srv:"Tidak dapat terhubung ke layanan profil. Periksa tautan web app lalu coba lagi.",nosetup:"Isi dulu tautan web app di admin.html.",none:"Tidak ada profil yang cocok.",
+ joined:"Bergabung",tenure:"Lama di proyek",back:"Semua profil",wa:"WhatsApp",mail:"Email",li:"LinkedIn",cv:"CV",folder:"Folder Drive",
+ adminT:"Catatan kantor",status:"Status",join:"Tanggal bergabung di Proyek",end:"Tanggal keluar",notes:"Catatan kantor",save:"Simpan",saved:"Tersimpan",reset:"Reset kode akses",resetC:"Klik lagi untuk reset",resetDone:"Kode akses dihapus. Orang tersebut dapat membuat yang baru.",
+ about:"Tentang",quals:"Kualifikasi",exp:"Pengalaman",edu:"Pendidikan",certs:"Sertifikat",bio:"Data pribadi",dob:"Tanggal lahir",nat:"Kewarganegaraan",city:"Kota asal",lang:"Bahasa",emg:"Kontak darurat",
+ present:"Sekarang",issued:"Terbit",expires:"Berlaku sampai",noCv:"Tanpa CV",updated:"Profil terakhir diperbarui",nonum:"Tidak ada nomor telepon",
+ soonT:"Berikutnya",soonB:"Paket perpisahan (tulisan, email, PDF sertifikat) setelah Anda kirim format sertifikat. Penilaian kompetensi setelah itu.",days:"hari",mo:"bln",yr:"thn"}
+};
+let lang="en";try{const l=localStorage.getItem("icadm-lang");if(l==="id"||l==="en")lang=l}catch(e){}
+const t=k=>TX[lang][k]||TX.en[k]||k;
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const safeUrl=u=>/^https?:\/\//i.test(u||"")?u:"";
+
+const S={key:"",people:[],photos:{},view:"gate",id:null,q:"",ic:"",st:"",pr:"",busy:false,msg:null,ok:false,arm:false,draft:null};
+try{S.key=sessionStorage.getItem("icadm-key")||""}catch(e){}
+
+/* ---------- helpers ---------- */
+const posName=p=>p.position==="Other"?(p.positionOther||"Other"):(p.position||"");
+const projName=p=>p.project==="Other"?(p.projectOther||"Other"):(p.project||"");
+const icName=p=>p.contractor==="Other"?(p.contractorOther||"Other"):(p.contractor||"");
+const initials=n=>(n||"?").split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join("")||"?";
+function dFmt(iso){if(!iso)return"—";const d=new Date(iso+"T00:00:00");return isNaN(d)?"—":d.toLocaleDateString(lang==="id"?"id-ID":"en-GB",{day:"numeric",month:"short",year:"numeric"})}
+function mFmt(m){if(!m)return"";const d=new Date(m+"-01T00:00:00");return isNaN(d)?m:d.toLocaleDateString(lang==="id"?"id-ID":"en-GB",{month:"short",year:"numeric"})}
+function todayISO(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function tenure(p){
+  if(!p.startDate)return"—";
+  const a=new Date(p.startDate+"T00:00:00"),b=new Date(((p.status==="left"&&p.endDate)?p.endDate:todayISO())+"T00:00:00");
+  if(isNaN(a)||isNaN(b)||b<a)return"—";
+  let y=b.getFullYear()-a.getFullYear(),m=b.getMonth()-a.getMonth(),d=b.getDate()-a.getDate();
+  if(d<0){m--;d+=new Date(b.getFullYear(),b.getMonth(),0).getDate()}
+  if(m<0){y--;m+=12}
+  if(!y&&!m)return Math.round((b-a)/864e5)+1+" "+t("days");
+  return (y?y+" "+t("yr")+" ":"")+(m?m+" "+t("mo"):"");
+}
+function waNumber(phone){
+  let d=String(phone||"").replace(/\D/g,"");
+  if(!d)return"";
+  if(d.startsWith("00"))d=d.slice(2);else if(d.startsWith("0"))d=DEFAULT_CC+d.slice(1);
+  return d.length>=8?d:"";
+}
+function waIcon(phone,label){
+  const n=waNumber(phone);
+  return n?`<a class="ico wa" href="https://wa.me/${n}" target="_blank" rel="noopener" title="${esc(t("wa"))}: +${n}" aria-label="${esc(label||t("wa"))}" data-stop="1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${WA_PATH}"/></svg></a>`
+    :`<span class="ico wa off" title="${esc(t("nonum"))}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${WA_PATH}"/></svg></span>`;
+}
+function toast(m){const el=document.createElement("div");el.className="toast";el.setAttribute("role","status");el.textContent=m;document.getElementById("toastbox").replaceChildren(el);setTimeout(()=>el.remove(),3000)}
+function avatar(p,big){const ph=S.photos[p.id];return `<div class="av${big?" big":""}" data-ph="${esc(p.id)}">${ph?`<img src="${esc(ph)}" alt="">`:esc(initials(p.name))}</div>`}
+
+/* ---------- api ---------- */
+async function api(body){
+  if(!API||API.startsWith("PASTE_"))throw new Error("nosetup");
+  const r=await fetch(API,{method:"POST",body:JSON.stringify({...body,key:S.key})});
+  return r.json();
+}
+async function load(){
+  S.busy=true;S.msg=null;render();
+  try{
+    const r=await api({action:"adminList"});
+    if(r.ok){S.people=r.people;S.view=S.view==="gate"?"list":S.view;try{sessionStorage.setItem("icadm-key",S.key)}catch(e){}loadPhotos()}
+    else{S.msg=r.error==="bad_key"?t("bk"):t("srv");S.view="gate";try{sessionStorage.removeItem("icadm-key")}catch(e){}}
+  }catch(e){S.msg=e&&e.message==="nosetup"?t("nosetup"):t("srv");S.view="gate"}
+  S.busy=false;render();
+}
+async function loadPhotos(){
+  const todo=S.people.filter(p=>p.hasPhoto&&!S.photos[p.id]);
+  let i=0;
+  async function worker(){
+    while(i<todo.length){
+      const p=todo[i++];
+      try{const r=await api({action:"adminPhoto",id:p.id});if(r.ok&&r.photo){S.photos[p.id]=r.photo;document.querySelectorAll('[data-ph="'+p.id+'"]').forEach(el=>{el.innerHTML=`<img src="${esc(r.photo)}" alt="">`})}}catch(e){}
+    }
+  }
+  await Promise.all([worker(),worker()]);
+}
+
+/* ---------- render ---------- */
+function top(){return `<header class="top"><div><h1>${esc(t("title"))}</h1><div class="subt">Admin · ${esc(t("sub"))}</div></div>
+ <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><div class="seg" role="group" aria-label="Language"><button data-a="lang" data-v="en" aria-pressed="${lang==="en"}">EN</button><button data-a="lang" data-v="id" aria-pressed="${lang==="id"}">ID</button></div>
+ ${S.view!=="gate"?`<button class="btn small" data-a="refresh">${esc(t("refresh"))}</button><button class="btn small" data-a="out">${esc(t("out"))}</button>`:""}</div></header>`}
+function msg(){return S.msg?`<div class="msg ${S.ok?"ok":""}" role="status">${esc(S.msg)}</div>`:""}
+function render(){
+  document.documentElement.lang=lang;
+  const app=document.getElementById("app");
+  app.innerHTML=top()+(S.view==="gate"?gate():S.view==="detail"?detail():list());
+}
+function gate(){
+  return `<div class="gate">${msg()}<div class="panel"><label class="f"><span>${esc(t("key"))}</span><input id="keyIn" type="password" autocomplete="current-password" value="${esc(S.key)}"></label>
+  <div style="margin-top:12px"><button class="btn primary" data-a="open"${S.busy?" disabled":""}>${esc(t("open"))}</button></div></div></div>`;
+}
+function projects(){return [...new Set(S.people.map(projName).filter(Boolean))].sort()}
+function list(){
+  const on=S.people.filter(p=>p.status!=="left"),left=S.people.filter(p=>p.status==="left");
+  const by=k=>on.filter(p=>k==="Other"?!ICS.includes(p.contractor):p.contractor===k).length;
+  const q=S.q.trim().toLowerCase();
+  const rows=S.people.filter(p=>{
+    if(S.st&&(p.status||"onsite")!==S.st)return false;
+    if(S.pr&&projName(p)!==S.pr)return false;
+    if(S.ic){if(S.ic==="Other"){if(ICS.includes(p.contractor))return false}else if(p.contractor!==S.ic)return false}
+    return !q||((p.name||"")+" "+posName(p)+" "+icName(p)).toLowerCase().includes(q);
+  }).sort((a,b)=>((a.status==="left")-(b.status==="left"))||(a.name||"").localeCompare(b.name||""));
+  const icb=k=>`<button class="ic" data-a="ic" data-v="${k}" aria-pressed="${S.ic===k}"><b>${by(k)}</b><span>${k}</span></button>`;
+  let h=msg()+`<div class="stats"><div class="stat main"><div class="n">${on.length}</div><div class="l">${esc(t("onsite"))}</div></div>
+   <div class="stat"><div class="n">${left.length}</div><div class="l">${esc(t("left"))}</div></div>
+   <div class="stat"><div class="n" style="${on.filter(p=>!p.cvUrl).length?"color:var(--bad)":""}">${on.filter(p=>!p.cvUrl).length}</div><div class="l">${esc(t("nocv"))}</div></div>
+   <div class="stat"><div class="n">${S.people.length}</div><div class="l">${esc(t("total"))}</div></div></div>
+   <div class="ics">${ICS.map(icb).join("")}${icb("Other")}</div>
+   <div class="toolbar"><input type="search" id="q" placeholder="${esc(t("search"))}" value="${esc(S.q)}" aria-label="${esc(t("search"))}">
+   <select id="stSel"><option value="">${esc(t("allSt"))}</option><option value="onsite"${S.st==="onsite"?" selected":""}>${esc(t("stOn"))}</option><option value="left"${S.st==="left"?" selected":""}>${esc(t("stLeft"))}</option></select>
+   ${projects().length>1?`<select id="prSel"><option value="">${esc(t("allPr"))}</option>${projects().map(x=>`<option${S.pr===x?" selected":""}>${esc(x)}</option>`).join("")}</select>`:""}
+   ${S.ic?`<button class="btn small" data-a="ic" data-v="">${esc(S.ic)} ✕</button>`:""}</div>`;
+  if(!rows.length)return h+`<div class="panel empty">${esc(t("none"))}</div>`;
+  for(const p of rows){
+    h+=`<div class="person" data-a="open1" data-id="${esc(p.id)}" tabindex="0">${avatar(p)}<div class="pinfo"><div class="nm">${esc(p.name||"—")}</div><div class="pos">${esc([posName(p),icName(p),projName(p)].filter(Boolean).join(" · "))}</div>
+    <div class="meta">${esc(t("joined"))} ${esc(dFmt(p.startDate))} · ${esc(tenure(p))}</div></div>
+    <span class="pill ${p.status==="left"?"left":"onsite"}">${esc(p.status==="left"?t("stLeft"):t("stOn"))}</span>
+    <div class="acts">${waIcon(p.phone,t("wa")+" "+p.name)}${p.cvUrl?`<a class="ico" href="${esc(safeUrl(p.cvUrl))}" target="_blank" rel="noopener" title="${esc(t("cv"))}" data-stop="1">CV</a>`:`<span class="pill bad">${esc(t("noCv"))}</span>`}</div></div>`;
+  }
+  return h;
+}
+function detail(){
+  const p=S.people.find(x=>x.id===S.id);
+  if(!p)return `<div class="panel empty">${esc(t("none"))}</div>`;
+  const d=S.draft;
+  const exp=(p.experience||[]).map(x=>`<div class="it"><b>${esc(x.title)}${x.company?" · "+esc(x.company):""}</b><span class="note">${esc(mFmt(x.from))}${x.from||x.to?" – ":""}${esc(x.to?mFmt(x.to):(x.from?t("present"):""))}</span>${x.description?`<div class="pre">${esc(x.description)}</div>`:""}</div>`).join("");
+  const edu=(p.education||[]).map(x=>`<div class="it"><b>${esc(x.school)}</b><span class="note">${esc([x.degree,x.year].filter(Boolean).join(" · "))}</span></div>`).join("");
+  const cer=(p.certs||[]).map(x=>`<div class="it"><b>${x.url?`<a href="${esc(safeUrl(x.url))}" target="_blank" rel="noopener">${esc(x.title)}</a>`:esc(x.title)}</b><span class="note">${esc([x.issuer,x.issued?t("issued")+" "+dFmt(x.issued):"",x.expiry?t("expires")+" "+dFmt(x.expiry):""].filter(Boolean).join(" · "))}</span></div>`).join("");
+  const bio=[["dob",p.dob?dFmt(p.dob):""],["nat",p.nationality],["city",p.city],["lang",p.languages],["emg",[p.emergencyName,p.emergencyPhone].filter(Boolean).join(" · ")]].filter(x=>x[1]).map(x=>`<div><dt>${esc(t(x[0]))}</dt><dd>${esc(x[1])}</dd></div>`).join("");
+  const sec=(title,body)=>body?`<div class="panel"><h2>${esc(title)}</h2>${body}</div>`:"";
+  return `<div style="margin-top:16px"><button class="btn small" data-a="back">← ${esc(t("back"))}</button></div>${msg()}
+  <div class="head">${avatar(p,true)}<div><h2>${esc(p.name||"—")}</h2><div>${esc([posName(p),icName(p),projName(p)].filter(Boolean).join(" · "))}</div>
+   <div class="meta">${esc(t("joined"))} ${esc(dFmt(p.startDate))} · ${esc(t("tenure"))}: ${esc(tenure(p))}</div>
+   <div class="links" style="margin-top:8px">${waIcon(p.phone,t("wa"))}${p.email?`<a class="btn small" href="mailto:${esc(p.email)}">${esc(p.email)}</a>`:""}${p.phone?`<span class="btn small" style="cursor:text">${esc(p.phone)}</span>`:""}${safeUrl(p.linkedin)?`<a class="btn small" href="${esc(safeUrl(p.linkedin))}" target="_blank" rel="noopener">${esc(t("li"))} ↗</a>`:""}${p.cvUrl?`<a class="btn small" href="${esc(safeUrl(p.cvUrl))}" target="_blank" rel="noopener">${esc(t("cv"))} ↗</a>`:""}${p.folderUrl?`<a class="btn small" href="${esc(safeUrl(p.folderUrl))}" target="_blank" rel="noopener">${esc(t("folder"))} ↗</a>`:""}</div></div></div>
+  <div class="panel"><h2>${esc(t("adminT"))}</h2><div class="grid">
+   <label class="f"><span>${esc(t("status"))}</span><select data-f="status"><option value="onsite"${d.status!=="left"?" selected":""}>${esc(t("stOn"))}</option><option value="left"${d.status==="left"?" selected":""}>${esc(t("stLeft"))}</option></select></label>
+   <label class="f"><span>${esc(t("join"))}</span><input type="date" data-f="startDate" value="${esc(d.startDate)}"></label>
+   <label class="f"><span>${esc(t("end"))}</span><input type="date" data-f="endDate" value="${esc(d.endDate)}"></label>
+   <label class="f full"><span>${esc(t("notes"))}</span><textarea data-f="adminNotes">${esc(d.adminNotes)}</textarea></label></div>
+   <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="btn primary" data-a="saveAdmin"${S.busy?" disabled":""}>${esc(t("save"))}</button><button class="btn danger" data-a="reset">${esc(S.arm?t("resetC"):t("reset"))}</button></div>
+   <p class="note">${esc(t("updated"))}: ${esc(p.updatedAt?new Date(p.updatedAt).toLocaleString(lang==="id"?"id-ID":"en-GB"):"—")}</p></div>
+  ${sec(t("about"),(p.about?`<div class="pre">${esc(p.about)}</div>`:"")+(p.qualifications?`<div class="pre note" style="margin-top:8px">${esc(p.qualifications)}</div>`:""))}
+  ${sec(t("exp"),exp?`<div class="tl">${exp}</div>`:"")}${sec(t("edu"),edu?`<div class="tl">${edu}</div>`:"")}${sec(t("certs"),cer?`<div class="tl">${cer}</div>`:"")}
+  ${sec(t("bio"),bio?`<dl class="bio">${bio}</dl>`:"")}
+  <div class="panel soon"><h2>${esc(t("soonT"))}</h2><p style="margin:0">${esc(t("soonB"))}</p></div>`;
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click",async e=>{
+  if(e.target.closest("[data-stop]"))return;
+  const el=e.target.closest("[data-a]");if(!el)return;
+  const a=el.dataset.a;
+  if(a==="lang"){lang=el.dataset.v;try{localStorage.setItem("icadm-lang",lang)}catch(_){}render()}
+  else if(a==="open"){S.key=document.getElementById("keyIn").value;await load()}
+  else if(a==="refresh")await load();
+  else if(a==="out"){S.key="";S.people=[];S.view="gate";S.msg=null;try{sessionStorage.removeItem("icadm-key")}catch(_){}render()}
+  else if(a==="ic"){S.ic=S.ic===el.dataset.v?"":el.dataset.v;render()}
+  else if(a==="open1"){const p=S.people.find(x=>x.id===el.dataset.id);if(p){S.id=p.id;S.view="detail";S.arm=false;S.msg=null;S.draft={status:p.status||"onsite",startDate:p.startDate||"",endDate:p.endDate||"",adminNotes:p.adminNotes||""};render();window.scrollTo(0,0)}}
+  else if(a==="back"){S.view="list";S.id=null;S.msg=null;render()}
+  else if(a==="saveAdmin"){
+    const d=S.draft;if(d.status==="left"&&!d.endDate)d.endDate=todayISO();
+    S.busy=true;render();
+    try{const r=await api({action:"adminUpdate",id:S.id,fields:d});if(r.ok){S.people=S.people.map(p=>p.id===S.id?r.person:p);S.draft={status:r.person.status||"onsite",startDate:r.person.startDate||"",endDate:r.person.endDate||"",adminNotes:r.person.adminNotes||""};S.msg=t("saved");S.ok=true}else{S.msg=t("srv");S.ok=false}}
+    catch(_){S.msg=t("srv");S.ok=false}
+    S.busy=false;render();
+  }
+  else if(a==="reset"){
+    if(!S.arm){S.arm=true;render();setTimeout(()=>{if(S.arm){S.arm=false;if(S.view==="detail")render()}},4000);return}
+    S.arm=false;
+    try{const r=await api({action:"adminResetPin",id:S.id});if(r.ok){S.people=S.people.map(p=>p.id===S.id?r.person:p);S.msg=t("resetDone");S.ok=true}else{S.msg=t("srv");S.ok=false}}catch(_){S.msg=t("srv");S.ok=false}
+    render();
+  }
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Enter"&&e.target.matches(".person"))e.target.click();
+  if(e.key==="Enter"&&e.target.id==="keyIn"){S.key=e.target.value;load()}
+});
+document.addEventListener("input",e=>{
+  const el=e.target;
+  if(el.id==="q"){S.q=el.value;const pos=el.selectionStart;render();const q=document.getElementById("q");if(q){q.focus();q.setSelectionRange(pos,pos)}}
+  else if(el.dataset.f&&S.draft){S.draft[el.dataset.f]=el.value}
+});
+document.addEventListener("change",e=>{
+  const el=e.target;
+  if(el.id==="stSel"){S.st=el.value;render()}
+  else if(el.id==="prSel"){S.pr=el.value;render()}
+  else if(el.dataset.f==="status"&&S.draft){S.draft.status=el.value;if(el.value==="left"&&!S.draft.endDate)S.draft.endDate=todayISO();render()}
+  else if(el.dataset.f&&S.draft){S.draft[el.dataset.f]=el.value}
+});
+if(S.key)load();else render();
+</script>
+</body>
+</html>
