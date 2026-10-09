@@ -109,6 +109,7 @@ dl.bio dd{margin:0;overflow-wrap:anywhere}
 .c-co{top:330px;left:0;right:0;text-align:center;color:#44a276;font-size:22px;letter-spacing:.14em}
 .c-body{top:385px;left:86px;right:86px;height:445px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;font-size:15px;line-height:1.55;gap:12px;overflow:hidden}
 .c-name{font:700 36px/1.15 Verdana,Arial,sans-serif;color:#44a276;border-bottom:2px solid #ffc600;padding:0 14px 6px}
+.c-id{font-size:13px;letter-spacing:.04em;color:#44494a;margin-top:-6px}
 .c-para{max-width:590px;font-size:14.5px;line-height:1.65;margin-top:2px}
 .c-place{font-weight:700;margin-top:-4px}
 .c-det{white-space:pre-line;font-size:14px;color:#44494a;margin-top:-4px}
@@ -325,7 +326,7 @@ const IC_FULL = {GSB:"PT Gerbang Saranabaja",WEN:"PT Wijaya Engindo Nusa",KKS:"P
 const CT = {
  en:{cert:"CERTIFICATE",of:"OF APPRECIATION",presented:"This certificate is proudly presented to",
   service:(p)=>`in sincere appreciation of dedicated HSSE service and engagement on the EcoOils ${p.project} Project`,
-  place:"PT EcoOils Jaya Indonesia, Simalungun",
+  place:"PT EcoOils Jaya Indonesia, Simalungun",idl:"KTP / Identification No.",
   detail:(p)=>[[p.pos,p.ic].filter(Boolean).join(", "),[p.from?`from ${p.from} to ${p.to}`:"",p.ten?`(${p.ten} on the project)`:""].filter(Boolean).join(" ")].filter(Boolean).join("\n"),
   inpart:"In particular, we appreciate:",thanks:"Thank you for your commitment to the safety of everyone on site.",
   subj:(p)=>`Certificate of Appreciation – ${p.name}, ${p.project} Project`,
@@ -333,7 +334,7 @@ const CT = {
   y:["year","years"],m:["month","months"],d:["day","days"]},
  id:{cert:"SERTIFIKAT",of:"PENGHARGAAN",presented:"Sertifikat ini dengan bangga diberikan kepada",
   service:(p)=>`sebagai apresiasi tulus atas dedikasi dan keterlibatan layanan HSSE pada Proyek EcoOils ${p.project}`,
-  place:"PT EcoOils Jaya Indonesia, Simalungun",
+  place:"PT EcoOils Jaya Indonesia, Simalungun",idl:"No. KTP / Identitas",
   detail:(p)=>[[p.pos,p.ic].filter(Boolean).join(", "),[p.from?`sejak ${p.from} hingga ${p.to}`:"",p.ten?`(lama bertugas ${p.ten})`:""].filter(Boolean).join(" ")].filter(Boolean).join("\n"),
   inpart:"Dengan apresiasi khusus atas:",thanks:"Terima kasih atas komitmen Anda terhadap keselamatan seluruh orang di lokasi proyek.",
   subj:(p)=>`Sertifikat Penghargaan – ${p.name}, Proyek ${p.project}`,
@@ -361,7 +362,7 @@ function summaryToPoints(txt){
 }
 function certData(p,c){
   const L=c.lang,end=(p.status==="left"&&p.endDate)?p.endDate:c.date;
-  return{name:p.name||"",first:(p.name||"").split(/\s+/)[0]||"",project:projName(p)||"Mentari",pos:posName(p),ic:IC_FULL[p.contractor]||icName(p),
+  return{name:p.name||"",ktp:p.ktp||"",first:(p.name||"").split(/\s+/)[0]||"",project:projName(p)||"Mentari",pos:posName(p),ic:IC_FULL[p.contractor]||icName(p),
     from:dLong(p.startDate,L),to:dLong(end,L),ten:tenureLong(p.startDate,end,L)};
 }
 function emailFor(p,c){const d=certData(p,c),pts=c.points.split("\n").map(x=>x.trim()).filter(Boolean);return{subject:CT[c.lang].subj(d),body:CT[c.lang].mail(d,pts)}}
@@ -376,6 +377,7 @@ function certHtml(p,c){
    <div class="c-co">PT. ECOOILS JAYA INDONESIA</div>
    <div class="c-body"><div>${esc(u.presented)}</div>
     <div class="c-name">${esc(d.name)}</div>
+    ${d.ktp?`<div class="c-id">${esc(u.idl)}: ${esc(d.ktp)}</div>`:""}
     <div>${esc(u.service(d))}</div>
     <div class="c-place">${esc(u.place)}</div>
     <div class="c-det">${esc(u.detail(d))}</div>
