@@ -155,7 +155,7 @@ const WA_PATH = "M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.
 const TX={
 en:{title:"EcoOils HSSE Database",sub:"Safety officers and managers of the implementation contractors",key:"Admin key",open:"Open",out:"Sign out",
  onsite:"On site now",left:"Left site",nocv:"On site, no CV",total:"Profiles",search:"Search name, position, contractor",allSt:"All status",allPr:"All projects",project:"Project",stOn:"On site",stLeft:"Left",refresh:"Refresh",
- bk:"Wrong admin key.",srv:"Could not reach the profile service. Check the web app link and try again.",nosetup:"Set the web app link in admin.html first.",none:"No profiles match.",
+ bk:"Wrong admin key.",lk:"Too many wrong attempts. Locked for 15 minutes.",srv:"Could not reach the profile service. Check the web app link and try again.",nosetup:"Set the web app link in admin.html first.",none:"No profiles match.",
  joined:"Joined",tenure:"Time on project",back:"All profiles",wa:"WhatsApp",mail:"Email",li:"LinkedIn",cv:"CV",folder:"Drive folder",
  adminT:"Office record",status:"Status",join:"Date of joining the Project",end:"Date left",notes:"Office notes",save:"Save",saved:"Saved",reset:"Reset passcode",resetC:"Click again to reset",resetDone:"Passcode cleared. The person can set a new one.",
  about:"About",quals:"Qualifications",exp:"Experience",edu:"Education",certs:"Certificates",bio:"Personal details",dob:"Date of birth",nat:"Nationality",city:"Home city",lang:"Languages",emg:"Emergency contact",
@@ -166,7 +166,7 @@ en:{title:"EcoOils HSSE Database",sub:"Safety officers and managers of the imple
  soonT:"Coming next",soonB:"Competency assessment for HSSE staff.",days:"days",mo:"mo",yr:"yr"},
 id:{title:"EcoOils HSSE Database",sub:"Petugas dan manajer keselamatan kontraktor pelaksana",key:"Kunci admin",open:"Buka",out:"Keluar",
  onsite:"Di lokasi",left:"Sudah keluar",nocv:"Di lokasi, tanpa CV",total:"Profil",search:"Cari nama, jabatan, kontraktor",allSt:"Semua status",allPr:"Semua proyek",project:"Proyek",stOn:"Di lokasi",stLeft:"Keluar",refresh:"Muat ulang",
- bk:"Kunci admin salah.",srv:"Tidak dapat terhubung ke layanan profil. Periksa tautan web app lalu coba lagi.",nosetup:"Isi dulu tautan web app di admin.html.",none:"Tidak ada profil yang cocok.",
+ bk:"Kunci admin salah.",lk:"Terlalu banyak percobaan salah. Terkunci 15 menit.",srv:"Tidak dapat terhubung ke layanan profil. Periksa tautan web app lalu coba lagi.",nosetup:"Isi dulu tautan web app di admin.html.",none:"Tidak ada profil yang cocok.",
  joined:"Bergabung",tenure:"Lama di proyek",back:"Semua profil",wa:"WhatsApp",mail:"Email",li:"LinkedIn",cv:"CV",folder:"Folder Drive",
  adminT:"Catatan kantor",status:"Status",join:"Tanggal bergabung di Proyek",end:"Tanggal keluar",notes:"Catatan kantor",save:"Simpan",saved:"Tersimpan",reset:"Reset kode akses",resetC:"Klik lagi untuk reset",resetDone:"Kode akses dihapus. Orang tersebut dapat membuat yang baru.",
  about:"Tentang",quals:"Kualifikasi",exp:"Pengalaman",edu:"Pendidikan",certs:"Sertifikat",bio:"Data pribadi",dob:"Tanggal lahir",nat:"Kewarganegaraan",city:"Kota asal",lang:"Bahasa",emg:"Kontak darurat",
@@ -258,7 +258,7 @@ async function load(){
   try{
     const r=await api({action:"adminList"});
     if(r.ok){S.people=r.people;S.view=S.view==="gate"?"list":S.view;try{sessionStorage.setItem("icadm-key",S.key)}catch(e){}loadPhotos()}
-    else{S.msg=r.error==="bad_key"?t("bk"):t("srv");S.view="gate";try{sessionStorage.removeItem("icadm-key")}catch(e){}}
+    else{S.msg=r.error==="bad_key"?t("bk"):r.error==="locked"?t("lk"):t("srv");S.view="gate";try{sessionStorage.removeItem("icadm-key")}catch(e){}}
   }catch(e){S.msg=e&&e.message==="nosetup"?t("nosetup"):t("srv");S.view="gate"}
   S.busy=false;render();
 }
