@@ -74,6 +74,11 @@ dl.bio{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap
 dl.bio dt{font-size:12.5px;color:var(--mute);font-weight:600}
 dl.bio dd{margin:0;overflow-wrap:anywhere}
 .hidden{display:none!important}
+.bad{border-color:var(--bad)!important;background:var(--bad-bg)!important}
+.avatar.bad{box-shadow:0 0 0 3px var(--bad)}
+.mask{font:600 14px ui-monospace,Menlo,Consolas,monospace;color:var(--mute);white-space:nowrap}
+.req{color:var(--bad);font-weight:700}
+.reqnote{background:var(--soft);border-radius:8px;padding:9px 12px;margin-bottom:12px;font-size:13.5px}
 .crop-bg{position:fixed;inset:0;background:rgba(34,30,31,.6);z-index:20;display:grid;place-items:center;padding:16px}
 .crop{background:var(--card);border-radius:12px;padding:16px;width:100%;max-width:340px;border-top:5px solid var(--gold)}
 .crop h3{margin:0 0 4px;font-size:16px}
@@ -114,7 +119,7 @@ en:{brand:"EcoOils HSSE Database",sub:"For safety officers and managers of the i
  s7:"CV",cvOn:"CV on record",cvNone:"No CV uploaded yet",cvRm:"Remove CV",cvH:"PDF or Word, up to 8 MB",
  s8:"Personal details",dob:"Date of birth",nat:"Nationality",city:"Home city and country",lang:"Languages",en:"Emergency contact name",ep:"Emergency contact phone",
  present:"Present",none:"Nothing added",onsite:"On site",left:"Left site",expires:"Expires",issued:"Issued",
- join:"Date of joining the Project",ktp:"KTP number (Identity number)",nktp:"Enter your KTP / identity number.",cropT:"Adjust your photo",cropH:"Drag to move. Use the slider to zoom in or out.",use:"Use photo",cancel:"Cancel",project:"Project",projOther:"Project name",joined:"Joined",hint:"Your status on site and leaving date are kept by the HSSE office."},
+ join:"Date of joining the Project",ktp:"KTP number (last 4 digits only)",ktpH:"Type only the last 4 digits. The rest is hidden and shown as X.",nktp:"Enter the last 4 digits of your KTP number.",reqNote:"All fields and uploads are required. Capital letters and spacing are corrected automatically as you type.",reqMsg:"Please complete all required items. Missing:",photoL:"Profile photo",cvL:"CV",certFile:"Certificate file",optional:"optional",cropT:"Adjust your photo",cropH:"Drag to move. Use the slider to zoom in or out.",use:"Use photo",cancel:"Cancel",project:"Project",projOther:"Project name",joined:"Joined",hint:"Your status on site and leaving date are kept by the HSSE office."},
 id:{brand:"EcoOils HSSE Database",sub:"Untuk petugas dan manajer keselamatan kontraktor pelaksana",
  gateT:"Profil lokasi Anda",gateP:"Perbarui data, CV dan sertifikat Anda. Hanya kantor HSSE yang dapat melihatnya.",
  email:"Email",pin:"Kode akses (minimal 6 karakter)",open:"Buka profil saya",create:"Buat profil saya",
@@ -132,14 +137,54 @@ id:{brand:"EcoOils HSSE Database",sub:"Untuk petugas dan manajer keselamatan kon
  s7:"CV",cvOn:"CV tersimpan",cvNone:"CV belum diunggah",cvRm:"Hapus CV",cvH:"PDF atau Word, maksimal 8 MB",
  s8:"Data pribadi",dob:"Tanggal lahir",nat:"Kewarganegaraan",city:"Kota dan negara asal",lang:"Bahasa",en:"Nama kontak darurat",ep:"Telepon kontak darurat",
  present:"Sekarang",none:"Belum ada",onsite:"Di lokasi",left:"Sudah keluar",expires:"Berlaku sampai",issued:"Terbit",
- join:"Tanggal bergabung di Proyek",ktp:"Nomor KTP (Nomor identitas)",nktp:"Isi nomor KTP / identitas Anda.",cropT:"Atur foto Anda",cropH:"Geser untuk memindahkan. Gunakan penggeser untuk memperbesar atau memperkecil.",use:"Pakai foto",cancel:"Batal",project:"Proyek",projOther:"Nama proyek",joined:"Bergabung",hint:"Status di lokasi dan tanggal keluar dicatat oleh kantor HSSE."}
+ join:"Tanggal bergabung di Proyek",ktp:"Nomor KTP (4 digit terakhir saja)",ktpH:"Ketik hanya 4 digit terakhir. Sisanya disembunyikan dan ditampilkan sebagai X.",nktp:"Isi 4 digit terakhir nomor KTP Anda.",reqNote:"Semua kolom dan unggahan wajib diisi. Huruf kapital dan spasi diperbaiki otomatis saat Anda mengetik.",reqMsg:"Mohon lengkapi semua data wajib. Belum diisi:",photoL:"Foto profil",cvL:"CV",certFile:"Berkas sertifikat",optional:"opsional",cropT:"Atur foto Anda",cropH:"Geser untuk memindahkan. Gunakan penggeser untuk memperbesar atau memperkecil.",use:"Pakai foto",cancel:"Batal",project:"Proyek",projOther:"Nama proyek",joined:"Bergabung",hint:"Status di lokasi dan tanggal keluar dicatat oleh kantor HSSE."}
 };
 let lang="en";try{const l=localStorage.getItem("icp-lang");if(l==="id"||l==="en")lang=l;else if((navigator.language||"").startsWith("id"))lang="id"}catch(e){}
 const t=k=>TX[lang][k]||TX.en[k]||k;
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
+/* ---------- KTP: only the last 4 digits are ever asked for, stored or shown ---------- */
+const ktp4=v=>String(v||"").replace(/\D/g,"").slice(-4);
+const maskKtp=v=>{const d=ktp4(v);return d?"XXXX XXXX XXXX "+d:""};
+const normProfile=p=>{const r={...blankProfile(),...p};r.ktp=ktp4(r.ktp);return r};
+
+/* ---------- automatic proper English: capital letters and spacing ---------- */
+const ACR=new Set("HSSE HSE HSEQ NEBOSH IGC NGC IDIP NDIP IDP EIDP IOSH IRCA CMIOSH TECHIOSH PTW LOTO PPE CSP OSHA ISO SMK3 K3 SOP JSA JHA HAZOP HAZID QA QC EPC EPCI CV PT PBS GSB WEN KKS SEZ NDT TBT MSDS SDS UK USA UAE BNSP AK3 SKKNI P3K CHST OHSAS HR BSC MSC MBA HND".split(" "));
+const SMALLW=new Set("and of the in for on at to a an or by with di dan untuk dari yang pada ke".split(" "));
+function titleCase(s){
+  let first=true;
+  return s.replace(/[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ'’]*/g,(w,off)=>{
+    const lead=off===0||/[\s\-\/(.,]/.test(s[off-1]);
+    const isFirst=first;first=false;
+    if(!lead)return w;
+    if(!isFirst&&SMALLW.has(w.toLowerCase())&&w===w.toLowerCase())return w;
+    return w.charAt(0).toUpperCase()+w.slice(1);
+  });
+}
+function sentenceCase(s){
+  s=s.replace(/(^\s*|[.!?]\s+|\n\s*|[•\-–*]\s+)([a-zà-ÿ])/g,(m,a,b)=>a+b.toUpperCase());
+  return s.replace(/\bi\b(?=\s|'|’|$)/g,"I");
+}
+function fixCaps(s,mode){
+  const letters=s.replace(/[^A-Za-z]/g,"");
+  if(letters.length<6||letters.replace(/[^A-Z]/g,"").length/letters.length<0.8)return s;
+  const low=s.toLowerCase().replace(/[A-Za-z0-9]+/g,w=>ACR.has(w.toUpperCase())?w.toUpperCase():w);
+  return low;
+}
+function liveFix(v,mode){return mode==="title"?titleCase(v):mode==="sent"?sentenceCase(v):v}
+function fullFix(v,mode){
+  if(!mode)return v;
+  v=v.replace(/[ \t]{2,}/g," ").replace(/\s+([,;:!?])/g,"$1").replace(/([,;:!?])(?=[A-Za-z])/g,"$1 ").replace(/[ \t]+$/gm,"").trim();
+  v=fixCaps(v,mode);
+  v=liveFix(v,mode);
+  return v.replace(/\b[A-Za-z0-9]{2,8}\b/g,w=>ACR.has(w.toUpperCase())?w.toUpperCase():w);
+}
+const FMT={name:"title",positionOther:"title",contractorOther:"title",nationality:"title",city:"title",languages:"title",emergencyName:"title",about:"sent",qualifications:"sent"};
+const LFMT={"experience.title":"title","experience.company":"title","experience.description":"sent","education.school":"title","education.degree":"title","certs.title":"title","certs.issuer":"title"};
+const fmtOf=el=>el.dataset.l?LFMT[el.dataset.l+"."+el.dataset.k]:(el.dataset.f?FMT[el.dataset.f]:undefined);
+
 const blankProfile=()=>({name:"",ktp:"",startDate:"",project:PROJECTS[0],projectOther:"",position:"Safety Officer",positionOther:"",contractor:"GSB",contractorOther:"",phone:"",linkedin:"",dob:"",nationality:"",city:"",languages:"",emergencyName:"",emergencyPhone:"",about:"",qualifications:"",experience:[],education:[],certs:[],photo:null,hasCv:false,cvName:"",status:"onsite"});
-const S={screen:"gate",email:"",pin:"",consent:false,isNew:false,P:blankProfile(),newPhoto:null,newCv:null,removeCv:false,certFiles:{},busy:false,msg:null,msgOk:false};
+const S={showErr:false,miss:new Set(),screen:"gate",email:"",pin:"",consent:false,isNew:false,P:blankProfile(),newPhoto:null,newCv:null,removeCv:false,certFiles:{},busy:false,msg:null,msgOk:false};
 
 /* ---------- API ---------- */
 async function api(body){
@@ -206,7 +251,32 @@ const posName=p=>p.position==="Other"?(p.positionOther||""):p.position;
 const projName=p=>p.project==="Other"?(p.projectOther||""):(p.project||"");
 const icName=p=>p.contractor==="Other"?(p.contractorOther||""):p.contractor;
 const initials=n=>(n||"?").split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join("")||"?";
-function avatar(p){return `<div class="avatar">${p.photo?`<img src="${esc(p.photo)}" alt="">`:esc(initials(p.name))}</div>`}
+function avatar(p,k){return `<div class="avatar${k&&S.showErr&&S.miss.has(k)?" bad":""}"${k?` data-key="${k}"`:""}>${p.photo?`<img src="${esc(p.photo)}" alt="">`:esc(initials(p.name))}</div>`}
+
+/* ---------- required items ---------- */
+function missingList(){
+  const P=S.P,m=[],add=(k,l)=>m.push({k,l});
+  const e=v=>!String(v||"").trim();
+  if(!(P.photo||S.newPhoto))add("photo",t("photoL"));
+  if(e(P.name))add("f:name",t("name"));
+  if(P.position==="Other"&&e(P.positionOther))add("f:positionOther",t("posOther"));
+  if(P.contractor==="Other"&&e(P.contractorOther))add("f:contractorOther",t("icOther"));
+  if(P.project==="Other"&&e(P.projectOther))add("f:projectOther",t("projOther"));
+  if(e(P.startDate))add("f:startDate",t("join"));
+  if(ktp4(P.ktp).length!==4)add("f:ktp",t("ktp"));
+  [["phone","phone"],["linkedin","linkedin"],["about","about"],["qualifications","quals"],["dob","dob"],["nationality","nat"],["city","city"],["languages","lang"],["emergencyName","en"],["emergencyPhone","ep"]].forEach(([k,l])=>{if(e(P[k]))add("f:"+k,t(l))});
+  if(!((P.hasCv&&!S.removeCv)||S.newCv))add("cv",t("cvL"));
+  if(!P.experience.length)add("add:experience",t("s4"));
+  P.experience.forEach((x,i)=>[["title","jt"],["company","co"],["from","from"],["description","desc"]].forEach(([k,l])=>{if(e(x[k]))add(`l:experience:${i}:${k}`,t("s4")+" #"+(i+1)+": "+t(l))}));
+  if(!P.education.length)add("add:education",t("s5"));
+  P.education.forEach((x,i)=>[["school","school"],["degree","degree"],["year","year"]].forEach(([k,l])=>{if(e(x[k]))add(`l:education:${i}:${k}`,t("s5")+" #"+(i+1)+": "+t(l))}));
+  if(!P.certs.length)add("add:certs",t("s6"));
+  P.certs.forEach((x,i)=>{[["title","ct"],["issuer","ci"],["issued","cd"]].forEach(([k,l])=>{if(e(x[k]))add(`l:certs:${i}:${k}`,t("s6")+" #"+(i+1)+": "+t(l))});if(!(x.fileId||S.certFiles[i]))add(`l:certs:${i}:file`,t("s6")+" #"+(i+1)+": "+t("certFile"))});
+  return m;
+}
+function K(key){return ` data-key="${key}"${S.showErr&&S.miss.has(key)?' class="bad"':""}`}
+function LA(l,i,k){return `data-l="${l}" data-i="${i}" data-k="${k}"`+K(`l:${l}:${i}:${k}`)}
+function refreshBad(){if(!S.showErr)return;S.miss=new Set(missingList().map(x=>x.k));document.querySelectorAll("[data-key]").forEach(el=>el.classList.toggle("bad",S.miss.has(el.dataset.key)))}
 
 /* ---------- render ---------- */
 function topbar(){return `<div class="top"><div class="brand"><img src="${LOGO}" alt="EcoOils"><small>${esc(t("brand"))}<br>${esc(COMPANY)}</small></div>
@@ -227,44 +297,46 @@ function gate(){
   <label class="row" style="margin-top:12px;align-items:flex-start"><input type="checkbox" id="g_consent"${S.consent?" checked":""}><span class="note">${esc(t("consent"))}</span></label>
   <div class="row" style="margin-top:14px"><button class="btn p" data-a="login"${S.busy?" disabled":""}>${esc(t("open"))}</button><button class="btn" data-a="register"${S.busy?" disabled":""}>${esc(t("create"))}</button></div></div></div>`;
 }
-function inp(k,l,type,ph){return `<label class="f"><span>${esc(t(l))}</span><input data-f="${k}" type="${type||"text"}" value="${esc(S.P[k])}"${ph?` placeholder="${esc(ph)}"`:""}></label>`}
-function ta(k,l,ph){return `<label class="f full"><span>${esc(t(l))}</span><textarea data-f="${k}"${ph?` placeholder="${esc(ph)}"`:""}>${esc(S.P[k])}</textarea></label>`}
+function inp(k,l,type,ph){const f=FMT[k];return `<label class="f"><span>${esc(t(l))} <b class="req">*</b></span><input data-f="${k}"${K("f:"+k)} type="${type||"text"}" value="${esc(S.P[k])}"${f?` autocapitalize="${f==="title"?"words":"sentences"}"`:""}${ph?` placeholder="${esc(ph)}"`:""}></label>`}
+function ta(k,l,ph){return `<label class="f full"><span>${esc(t(l))} <b class="req">*</b></span><textarea data-f="${k}"${K("f:"+k)} spellcheck="true" autocapitalize="sentences"${ph?` placeholder="${esc(ph)}"`:""}>${esc(S.P[k])}</textarea></label>`}
+function ktpField(){return `<label class="f"><span>${esc(t("ktp"))} <b class="req">*</b></span><div class="row" style="flex-wrap:nowrap;gap:8px"><span class="mask">XXXX XXXX XXXX</span><input data-f="ktp"${K("f:ktp")} inputmode="numeric" maxlength="4" autocomplete="off" placeholder="1234" style="width:90px" value="${esc(S.P.ktp)}"></div><span class="note" style="font-weight:400;margin-top:4px">${esc(t("ktpH"))}</span></label>`}
 function opts(a,cur){return a.map(v=>`<option${v===cur?" selected":""}>${esc(v)}</option>`).join("")}
 function editor(){
   const P=S.P;
   let h=msgHtml();
-  h+=`<div class="card"><h2>${esc(t("s1"))}</h2><div class="row" style="align-items:center">${avatar(P)}<div><label class="btn s" for="photoIn">${esc(t("choose"))}</label><input id="photoIn" type="file" accept="image/*" class="hidden"></div></div>
+  h+=`<div class="reqnote">${esc(t("reqNote"))}</div>`;
+  h+=`<div class="card"><h2>${esc(t("s1"))}</h2><div class="row" style="align-items:center">${avatar(P,"photo")}<div><label class="btn s" for="photoIn">${esc(t("choose"))}</label><input id="photoIn" type="file" accept="image/*" class="hidden"></div></div>
   <div class="grid" style="margin-top:14px">${inp("name","name")}
   <label class="f"><span>${esc(t("position"))}</span><select data-f="position" data-r="1">${opts(POSITIONS,P.position)}</select></label>
   ${P.position==="Other"?inp("positionOther","posOther"):""}
   <label class="f"><span>${esc(t("contractor"))}</span><select data-f="contractor" data-r="1">${opts([...ICS,"Other"],P.contractor)}</select></label>
   ${P.contractor==="Other"?inp("contractorOther","icOther"):""}
   <label class="f"><span>${esc(t("project"))}</span><select data-f="project" data-r="1">${opts(PROJECTS,P.project)}</select></label>
-  ${P.project==="Other"?inp("projectOther","projOther"):""}${inp("ktp","ktp")}${inp("startDate","join","date")}</div></div>
+  ${P.project==="Other"?inp("projectOther","projOther"):""}${ktpField()}${inp("startDate","join","date")}</div></div>
   <div class="card"><h2>${esc(t("s2"))}</h2><div class="grid"><label class="f"><span>${esc(t("email"))}</span><input value="${esc(S.email)}" disabled></label>${inp("phone","phone","tel")}
   <label class="f full"><span>${esc(t("linkedin"))}</span><input data-f="linkedin" type="url" value="${esc(P.linkedin)}" placeholder="https://www.linkedin.com/in/..."></label></div></div>
   <div class="card"><h2>${esc(t("s3"))}</h2><div class="grid">${ta("about","about")}${ta("qualifications","quals",t("qualsH"))}</div></div>
   <div class="card"><h2>${esc(t("s4"))}</h2>${P.experience.map((x,i)=>`<div class="entry"><div class="row head"><b>#${i+1}</b><button class="btn s d" data-a="rmList" data-l="experience" data-i="${i}">${esc(t("rm"))}</button></div>
-   <div class="grid"><label class="f"><span>${esc(t("jt"))}</span><input data-l="experience" data-i="${i}" data-k="title" value="${esc(x.title)}"></label>
-   <label class="f"><span>${esc(t("co"))}</span><input data-l="experience" data-i="${i}" data-k="company" value="${esc(x.company)}"></label>
-   <label class="f"><span>${esc(t("from"))}</span><input type="month" data-l="experience" data-i="${i}" data-k="from" value="${esc(x.from)}"></label>
-   <label class="f"><span>${esc(t("to"))}</span><input type="month" data-l="experience" data-i="${i}" data-k="to" value="${esc(x.to)}"></label>
-   <label class="f full"><span>${esc(t("desc"))}</span><textarea data-l="experience" data-i="${i}" data-k="description">${esc(x.description)}</textarea></label></div></div>`).join("")}
-   <button class="btn s" data-a="addList" data-l="experience">+ ${esc(t("add"))}</button></div>
+   <div class="grid"><label class="f"><span>${esc(t("jt"))} <b class="req">*</b></span><input ${LA("experience",i,"title")} value="${esc(x.title)}"></label>
+   <label class="f"><span>${esc(t("co"))} <b class="req">*</b></span><input ${LA("experience",i,"company")} value="${esc(x.company)}"></label>
+   <label class="f"><span>${esc(t("from"))} <b class="req">*</b></span><input type="month" ${LA("experience",i,"from")} value="${esc(x.from)}"></label>
+   <label class="f"><span>${esc(t("to"))}</span><input type="month" ${LA("experience",i,"to")} value="${esc(x.to)}"></label>
+   <label class="f full"><span>${esc(t("desc"))} <b class="req">*</b></span><textarea ${LA("experience",i,"description")}>${esc(x.description)}</textarea></label></div></div>`).join("")}
+   <span data-key="add:experience"${S.showErr&&S.miss.has("add:experience")?' class="bad"':""} style="display:inline-block;padding:3px;border-radius:99px;border:1px solid transparent"><button class="btn s" data-a="addList" data-l="experience">+ ${esc(t("add"))}</button></span></div>
   <div class="card"><h2>${esc(t("s5"))}</h2>${P.education.map((x,i)=>`<div class="entry"><div class="row head"><b>#${i+1}</b><button class="btn s d" data-a="rmList" data-l="education" data-i="${i}">${esc(t("rm"))}</button></div>
-   <div class="grid"><label class="f"><span>${esc(t("school"))}</span><input data-l="education" data-i="${i}" data-k="school" value="${esc(x.school)}"></label>
-   <label class="f"><span>${esc(t("degree"))}</span><input data-l="education" data-i="${i}" data-k="degree" value="${esc(x.degree)}"></label>
-   <label class="f"><span>${esc(t("year"))}</span><input data-l="education" data-i="${i}" data-k="year" value="${esc(x.year)}" inputmode="numeric"></label></div></div>`).join("")}
-   <button class="btn s" data-a="addList" data-l="education">+ ${esc(t("add"))}</button></div>
+   <div class="grid"><label class="f"><span>${esc(t("school"))} <b class="req">*</b></span><input ${LA("education",i,"school")} value="${esc(x.school)}"></label>
+   <label class="f"><span>${esc(t("degree"))} <b class="req">*</b></span><input ${LA("education",i,"degree")} value="${esc(x.degree)}"></label>
+   <label class="f"><span>${esc(t("year"))} <b class="req">*</b></span><input ${LA("education",i,"year")} value="${esc(x.year)}" inputmode="numeric"></label></div></div>`).join("")}
+   <span data-key="add:education"${S.showErr&&S.miss.has("add:education")?' class="bad"':""} style="display:inline-block;padding:3px;border-radius:99px;border:1px solid transparent"><button class="btn s" data-a="addList" data-l="education">+ ${esc(t("add"))}</button></span></div>
   <div class="card"><h2>${esc(t("s6"))}</h2>${P.certs.map((x,i)=>`<div class="entry"><div class="row head"><b>#${i+1}</b><button class="btn s d" data-a="rmList" data-l="certs" data-i="${i}">${esc(t("rm"))}</button></div>
-   <div class="grid"><label class="f"><span>${esc(t("ct"))}</span><input data-l="certs" data-i="${i}" data-k="title" value="${esc(x.title)}"></label>
-   <label class="f"><span>${esc(t("ci"))}</span><input data-l="certs" data-i="${i}" data-k="issuer" value="${esc(x.issuer)}"></label>
-   <label class="f"><span>${esc(t("cd"))}</span><input type="date" data-l="certs" data-i="${i}" data-k="issued" value="${esc(x.issued)}"></label>
-   <label class="f"><span>${esc(t("ce"))}</span><input type="date" data-l="certs" data-i="${i}" data-k="expiry" value="${esc(x.expiry)}"></label>
-   <label class="f full"><span>${esc(t("cf"))}${x.fileName&&!S.certFiles[i]?` · ${esc(t("have"))}: ${esc(x.fileName)}`:""}${S.certFiles[i]?` · ${esc(S.certFiles[i].name)}`:""}</span><input type="file" accept=".pdf,image/*" data-cf="${i}"></label></div></div>`).join("")}
-   <button class="btn s" data-a="addList" data-l="certs">+ ${esc(t("add"))}</button></div>
+   <div class="grid"><label class="f"><span>${esc(t("ct"))} <b class="req">*</b></span><input ${LA("certs",i,"title")} value="${esc(x.title)}"></label>
+   <label class="f"><span>${esc(t("ci"))} <b class="req">*</b></span><input ${LA("certs",i,"issuer")} value="${esc(x.issuer)}"></label>
+   <label class="f"><span>${esc(t("cd"))} <b class="req">*</b></span><input type="date" ${LA("certs",i,"issued")} value="${esc(x.issued)}"></label>
+   <label class="f"><span>${esc(t("ce"))} (${esc(t("optional"))})</span><input type="date" ${LA("certs",i,"expiry")} value="${esc(x.expiry)}"></label>
+   <label class="f full"><span>${esc(t("cf"))} <b class="req">*</b>${x.fileName&&!S.certFiles[i]?` · ${esc(t("have"))}: ${esc(x.fileName)}`:""}${S.certFiles[i]?` · ${esc(S.certFiles[i].name)}`:""}</span><input type="file" accept=".pdf,image/*" data-cf="${i}"${K(`l:certs:${i}:file`)}></label></div></div>`).join("")}
+   <span data-key="add:certs"${S.showErr&&S.miss.has("add:certs")?' class="bad"':""} style="display:inline-block;padding:3px;border-radius:99px;border:1px solid transparent"><button class="btn s" data-a="addList" data-l="certs">+ ${esc(t("add"))}</button></span></div>
   <div class="card"><h2>${esc(t("s7"))}</h2><p class="note" style="margin-top:0">${esc(S.newCv?S.newCv.name:(P.hasCv&&!S.removeCv?t("cvOn")+": "+P.cvName:t("cvNone")))}</p>
-   <div class="filebox"><input type="file" id="cvIn" accept=".pdf,.doc,.docx,application/pdf"><span class="note">${esc(t("cvH"))}</span>${P.hasCv&&!S.removeCv&&!S.newCv?`<button class="btn s d" data-a="rmCv">${esc(t("cvRm"))}</button>`:""}</div></div>
+   <div class="filebox"><input type="file" id="cvIn"${K("cv")} accept=".pdf,.doc,.docx,application/pdf"><span class="note">${esc(t("cvH"))}</span>${P.hasCv&&!S.removeCv&&!S.newCv?`<button class="btn s d" data-a="rmCv">${esc(t("cvRm"))}</button>`:""}</div></div>
   <div class="card"><h2>${esc(t("s8"))}</h2><div class="grid">${inp("dob","dob","date")}${inp("nationality","nat")}${inp("city","city")}${inp("languages","lang")}${inp("emergencyName","en")}${inp("emergencyPhone","ep","tel")}</div><p class="note">${esc(t("hint"))}</p></div>
   <div class="bar"><div class="in"><button class="btn" data-a="preview">${esc(t("preview"))}</button><div class="row"><button class="btn s" data-a="signout">${esc(t("out"))}</button><button class="btn p" data-a="save"${S.busy?" disabled":""}>${esc(S.busy?t("saving"):t("save"))}</button></div></div></div>`;
   return h;
@@ -275,7 +347,7 @@ function view(){
   const exp=P.experience.map(x=>`<div class="it"><b>${esc(x.title)}${x.company?` · ${esc(x.company)}`:""}</b><span class="sub">${esc(mFmt(x.from))}${x.from||x.to?" – ":""}${esc(x.to?mFmt(x.to):(x.from?t("present"):""))}</span>${x.description?`<div class="pre">${esc(x.description)}</div>`:""}</div>`).join("");
   const edu=P.education.map(x=>`<div class="it"><b>${esc(x.school)}</b><span class="sub">${esc([x.degree,x.year].filter(Boolean).join(" · "))}</span></div>`).join("");
   const cer=P.certs.map(x=>`<div class="it"><b>${esc(x.title)}</b><span class="sub">${esc([x.issuer,x.issued?t("issued")+" "+dFmt(x.issued):"",x.expiry?t("expires")+" "+dFmt(x.expiry):""].filter(Boolean).join(" · "))}</span></div>`).join("");
-  const bio=[["ktp",P.ktp],["dob",dFmt(P.dob)],["nat",P.nationality],["city",P.city],["lang",P.languages],["en",[P.emergencyName,P.emergencyPhone].filter(Boolean).join(" · ")]].filter(x=>x[1]).map(x=>`<div><dt>${esc(t(x[0]))}</dt><dd>${esc(x[1])}</dd></div>`).join("");
+  const bio=[["ktp",maskKtp(P.ktp)],["dob",dFmt(P.dob)],["nat",P.nationality],["city",P.city],["lang",P.languages],["en",[P.emergencyName,P.emergencyPhone].filter(Boolean).join(" · ")]].filter(x=>x[1]).map(x=>`<div><dt>${esc(t(x[0]))}</dt><dd>${esc(x[1])}</dd></div>`).join("");
   return `${msgHtml()}<div class="card hero"><div class="banner"></div><div class="body">${avatar(P)}<h1>${esc(P.name||"—")}</h1><div class="headline">${esc(line)}</div><div class="sub">${esc([projName(P),COMPANY].filter(Boolean).join(" · "))}</div>
   <div class="chips"><span class="chip">${esc(P.status==="left"?t("left"):t("onsite"))}</span>${P.startDate?`<span class="chip">${esc(t("joined"))} ${esc(dFmt(P.startDate))}</span>`:""}${S.email?`<span class="chip">${esc(S.email)}</span>`:""}${P.phone?`<span class="chip">${esc(P.phone)}</span>`:""}${P.linkedin?`<a class="chip" href="${esc(P.linkedin)}" target="_blank" rel="noopener">LinkedIn ↗</a>`:""}${P.hasCv||S.newCv?`<span class="chip">CV ✓</span>`:""}</div></div></div>
   ${sec(t("s3"),(P.about?`<div class="pre">${esc(P.about)}</div>`:"")+(P.qualifications?`<div class="pre note" style="margin-top:8px">${esc(P.qualifications)}</div>`:""))}
@@ -291,7 +363,7 @@ async function doLogin(){
   S.busy=true;setMsg(null);render();
   try{
     const r=await api({action:"login",email,pin});
-    if(r.ok){S.P={...blankProfile(),...r.profile};S.isNew=false;S.screen="edit";S.newPhoto=null;S.newCv=null;S.removeCv=false;S.certFiles={};setMsg(null)}
+    if(r.ok){S.P=normProfile(r.profile);S.isNew=false;S.screen="edit";S.newPhoto=null;S.newCv=null;S.removeCv=false;S.certFiles={};setMsg(null)}
     else setMsg(errText(r.error));
   }catch(e){setMsg(e&&e.message==="nosetup"?t("nosetup"):t("srv"))}
   S.busy=false;render();
@@ -305,7 +377,7 @@ async function doRegister(){
   S.busy=true;setMsg(null);render();
   try{
     const r=await api({action:"login",email,pin});
-    if(r.ok){S.P={...blankProfile(),...r.profile};S.isNew=false;S.screen="edit"}   /* already registered: open it, never overwrite */
+    if(r.ok){S.P=normProfile(r.profile);S.isNew=false;S.screen="edit"}   /* already registered: open it, never overwrite */
     else if(r.error==="not_found"){S.P=blankProfile();S.isNew=true;S.screen="edit"}
     else{setMsg(errText(r.error));S.busy=false;render();return}
     S.newPhoto=null;S.newCv=null;S.removeCv=false;S.certFiles={};setMsg(null);
@@ -313,14 +385,19 @@ async function doRegister(){
   S.busy=false;render();
 }
 async function doSave(){
-  if(!(S.P.name||"").trim()){setMsg(t("nname"));S.screen==="view"&&(S.screen="edit");render();window.scrollTo(0,0);return}
-  if(!(S.P.ktp||"").trim()){setMsg(t("nktp"));S.screen="edit";render();window.scrollTo(0,0);return}
+  const miss=missingList();
+  if(miss.length){
+    S.showErr=true;S.miss=new Set(miss.map(x=>x.k));S.screen="edit";
+    setMsg(t("reqMsg")+" "+miss.slice(0,6).map(x=>x.l).join(", ")+(miss.length>6?" … (+"+(miss.length-6)+")":""));
+    render();const b=document.querySelector(".bad");if(b)b.scrollIntoView({block:"center",behavior:"smooth"});else window.scrollTo(0,0);return;
+  }
+  S.showErr=false;S.miss=new Set();
   S.busy=true;setMsg(null);render();
   const files={};if(S.newPhoto)files.photo={mime:"image/jpeg",data:S.newPhoto,name:"photo.jpg"};if(S.newCv)files.cv=S.newCv;
-  const profile={...S.P};delete profile.photo;
+  const profile={...S.P};delete profile.photo;profile.ktp=ktp4(profile.ktp);
   try{
     const r=await api({action:"save",email:S.email,pin:S.pin,consent:S.consent,profile,files,removeCv:S.removeCv&&!S.newCv,certFiles:S.certFiles});
-    if(r.ok){S.P={...blankProfile(),...r.profile};S.newPhoto=null;S.newCv=null;S.removeCv=false;S.certFiles={};S.isNew=false;setMsg(t("saved"),true)}
+    if(r.ok){S.P=normProfile(r.profile);S.newPhoto=null;S.newCv=null;S.removeCv=false;S.certFiles={};S.isNew=false;setMsg(t("saved"),true)}
     else setMsg(errText(r.error));
   }catch(e){setMsg(e&&e.message==="nosetup"?t("nosetup"):t("srv"))}
   S.busy=false;render();window.scrollTo(0,0);
@@ -344,18 +421,28 @@ document.addEventListener("input",e=>{
   const el=e.target;
   if(el.id==="g_email"){S.email=el.value;return}
   if(el.id==="g_pin"){S.pin=el.value;return}
+  if(el.dataset.f==="ktp"){const d=el.value.replace(/\D/g,"").slice(0,4);if(d!==el.value)el.value=d;S.P.ktp=d;refreshBad();return}
+  const mode=fmtOf(el);
+  if(mode&&(el.tagName==="INPUT"||el.tagName==="TEXTAREA")){const v=liveFix(el.value,mode);if(v!==el.value){const p=el.selectionStart;el.value=v;try{el.setSelectionRange(p,p)}catch(_){}}}
   if(el.dataset.f&&!el.dataset.r){S.P[el.dataset.f]=el.value}
   else if(el.dataset.l){S.P[el.dataset.l][+el.dataset.i][el.dataset.k]=el.value}
+  refreshBad();
 });
 document.addEventListener("change",async e=>{
   const el=e.target;
+  const fm=fmtOf(el);
+  if(fm&&(el.tagName==="INPUT"||el.tagName==="TEXTAREA")){
+    const v=fullFix(el.value,fm);el.value=v;
+    if(el.dataset.f)S.P[el.dataset.f]=v;else if(el.dataset.l)S.P[el.dataset.l][+el.dataset.i][el.dataset.k]=v;
+    refreshBad();return;
+  }
   if(el.dataset.f&&el.dataset.r){S.P[el.dataset.f]=el.value;render();return}
   if(el.id==="photoIn"&&el.files[0]){
-    try{const url=await openCrop(el.files[0]);if(url){S.P.photo=url;S.newPhoto=url.split(",")[1];render()}}catch(_){setMsg(t("btype"));render()}
+    try{const url=await openCrop(el.files[0]);if(url){S.P.photo=url;S.newPhoto=url.split(",")[1];render();refreshBad()}}catch(_){setMsg(t("btype"));render()}
     el.value="";
   }
-  else if(el.id==="cvIn"&&el.files[0]){const f=await fileObj(el.files[0]);if(f){S.newCv=f;S.removeCv=false;setMsg(null);render()}else el.value=""}
-  else if(el.dataset.cf!==undefined&&el.files[0]){const f=await fileObj(el.files[0]);if(f){S.certFiles[el.dataset.cf]=f;setMsg(null);render()}else el.value=""}
+  else if(el.id==="cvIn"&&el.files[0]){const f=await fileObj(el.files[0]);if(f){S.newCv=f;S.removeCv=false;setMsg(null);render();refreshBad()}else el.value=""}
+  else if(el.dataset.cf!==undefined&&el.files[0]){const f=await fileObj(el.files[0]);if(f){S.certFiles[el.dataset.cf]=f;setMsg(null);render();refreshBad()}else el.value=""}
 });
 render();
 </script>
