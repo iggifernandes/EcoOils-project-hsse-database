@@ -155,7 +155,7 @@ const WA_PATH = "M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.
 const TX={
 en:{title:"EcoOils HSSE Database",sub:"Safety officers and managers of the implementation contractors",key:"Admin key",open:"Open",out:"Sign out",
  onsite:"On site now",left:"Left site",nocv:"On site, no CV",total:"Profiles",search:"Search name, position, contractor",allSt:"All status",allPr:"All projects",project:"Project",stOn:"On site",stLeft:"Left",refresh:"Refresh",
- bk:"Wrong admin key.",lk:"Too many wrong attempts. Locked for 15 minutes.",srv:"Could not reach the profile service. Check the web app link and try again.",nosetup:"Set the web app link in admin.html first.",none:"No profiles match.",
+ bk:"Wrong admin key.",trB:"Translate crew text",trOff:"Show original",trNote:"Translated automatically from what the crew wrote. Check important details against the original.",trBusy:"Translating...",lk:"Too many wrong attempts. Locked for 15 minutes.",srv:"Could not reach the profile service. Check the web app link and try again.",nosetup:"Set the web app link in admin.html first.",none:"No profiles match.",
  joined:"Joined",tenure:"Time on project",back:"All profiles",wa:"WhatsApp",mail:"Email",li:"LinkedIn",cv:"CV",folder:"Drive folder",
  adminT:"Office record",status:"Status",join:"Date of joining the Project",end:"Date left",notes:"Office notes",save:"Save",saved:"Saved",reset:"Reset passcode",resetC:"Click again to reset",resetDone:"Passcode cleared. The person can set a new one.",
  about:"About",quals:"Qualifications",exp:"Experience",edu:"Education",certs:"Certificates",bio:"Personal details",dob:"Date of birth",nat:"Nationality",city:"Home city",lang:"Languages",emg:"Emergency contact",
@@ -166,7 +166,7 @@ en:{title:"EcoOils HSSE Database",sub:"Safety officers and managers of the imple
  soonT:"Coming next",soonB:"Competency assessment for HSSE staff.",days:"days",mo:"mo",yr:"yr"},
 id:{title:"EcoOils HSSE Database",sub:"Petugas dan manajer keselamatan kontraktor pelaksana",key:"Kunci admin",open:"Buka",out:"Keluar",
  onsite:"Di lokasi",left:"Sudah keluar",nocv:"Di lokasi, tanpa CV",total:"Profil",search:"Cari nama, jabatan, kontraktor",allSt:"Semua status",allPr:"Semua proyek",project:"Proyek",stOn:"Di lokasi",stLeft:"Keluar",refresh:"Muat ulang",
- bk:"Kunci admin salah.",lk:"Terlalu banyak percobaan salah. Terkunci 15 menit.",srv:"Tidak dapat terhubung ke layanan profil. Periksa tautan web app lalu coba lagi.",nosetup:"Isi dulu tautan web app di admin.html.",none:"Tidak ada profil yang cocok.",
+ bk:"Kunci admin salah.",trB:"Terjemahkan teks kru",trOff:"Tampilkan asli",trNote:"Diterjemahkan otomatis dari tulisan kru. Periksa detail penting dengan teks asli.",trBusy:"Menerjemahkan...",lk:"Terlalu banyak percobaan salah. Terkunci 15 menit.",srv:"Tidak dapat terhubung ke layanan profil. Periksa tautan web app lalu coba lagi.",nosetup:"Isi dulu tautan web app di admin.html.",none:"Tidak ada profil yang cocok.",
  joined:"Bergabung",tenure:"Lama di proyek",back:"Semua profil",wa:"WhatsApp",mail:"Email",li:"LinkedIn",cv:"CV",folder:"Folder Drive",
  adminT:"Catatan kantor",status:"Status",join:"Tanggal bergabung di Proyek",end:"Tanggal keluar",notes:"Catatan kantor",save:"Simpan",saved:"Tersimpan",reset:"Reset kode akses",resetC:"Klik lagi untuk reset",resetDone:"Kode akses dihapus. Orang tersebut dapat membuat yang baru.",
  about:"Tentang",quals:"Kualifikasi",exp:"Pengalaman",edu:"Pendidikan",certs:"Sertifikat",bio:"Data pribadi",dob:"Tanggal lahir",nat:"Kewarganegaraan",city:"Kota asal",lang:"Bahasa",emg:"Kontak darurat",
@@ -181,7 +181,7 @@ const t=k=>TX[lang][k]||TX.en[k]||k;
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const safeUrl=u=>/^https?:\/\//i.test(u||"")?u:"";
 
-const S={key:"",people:[],photos:{},view:"gate",id:null,q:"",ic:"",st:"",pr:"",busy:false,msg:null,ok:false,arm:false,draft:null,cert:null,del:null};
+const TR={};const S={trOn:false,trBusy:false,key:"",people:[],photos:{},view:"gate",id:null,q:"",ic:"",st:"",pr:"",busy:false,msg:null,ok:false,arm:false,draft:null,cert:null,del:null};
 try{S.key=sessionStorage.getItem("icadm-key")||""}catch(e){}
 
 /* ---------- helpers ---------- */
@@ -248,6 +248,20 @@ function toast(m){const el=document.createElement("div");el.className="toast";el
 function avatar(p,big){const ph=S.photos[p.id];return `<div class="av${big?" big":""}" data-ph="${esc(p.id)}">${ph?`<img src="${esc(ph)}" alt="">`:esc(initials(p.name))}</div>`}
 
 /* ---------- api ---------- */
+
+const trKey=s=>lang+"|"+s;
+const TT=s=>(S.trOn&&s&&TR[trKey(s)])||s;
+function trStrings(p){const a=[p.about,p.qualifications];(p.experience||[]).forEach(x=>{a.push(x.title,x.description)});(p.certs||[]).forEach(x=>a.push(x.title));(p.education||[]).forEach(x=>a.push(x.degree));return [...new Set(a.filter(x=>x&&x.trim()))]}
+async function doTranslate(){
+  const p=S.people.find(x=>x.id===S.id);if(!p||!S.trOn)return;
+  const need=trStrings(p).filter(s=>!TR[trKey(s)]);if(!need.length){render();return}
+  S.trBusy=true;render();
+  try{const r=await api({action:"adminTranslate",texts:need,target:lang});
+    if(r.ok)need.forEach((s,i)=>{TR[trKey(s)]=r.texts[i]||s});
+    else{S.msg=r.error==="bad_key"?t("bk"):t("srv");S.ok=false}
+  }catch(e){S.msg=t("srv");S.ok=false}
+  S.trBusy=false;render();
+}
 async function api(body){
   if(!API||API.startsWith("PASTE_"))throw new Error("nosetup");
   const r=await fetch(API,{method:"POST",body:JSON.stringify({...body,key:S.key})});
@@ -324,9 +338,9 @@ function detail(){
   const p=S.people.find(x=>x.id===S.id);
   if(!p)return `<div class="panel empty">${esc(t("none"))}</div>`;
   const d=S.draft;
-  const exp=(p.experience||[]).map(x=>`<div class="it"><b>${esc(x.title)}${x.company?" · "+esc(x.company):""}</b><span class="note">${esc(mFmt(x.from))}${x.from||x.to?" – ":""}${esc(x.to?mFmt(x.to):(x.from?t("present"):""))}</span>${x.description?`<div class="pre">${esc(x.description)}</div>`:""}</div>`).join("");
-  const edu=(p.education||[]).map(x=>`<div class="it"><b>${esc(x.school)}</b><span class="note">${esc([x.degree,x.year].filter(Boolean).join(" · "))}</span></div>`).join("");
-  const cer=(p.certs||[]).map(x=>`<div class="it"><b>${x.url?`<a href="${esc(safeUrl(x.url))}" target="_blank" rel="noopener">${esc(x.title)}</a>`:esc(x.title)}</b><span class="note">${esc([x.issuer,x.issued?t("issued")+" "+dFmt(x.issued):"",x.expiry?t("expires")+" "+dFmt(x.expiry):""].filter(Boolean).join(" · "))}</span></div>`).join("");
+  const exp=(p.experience||[]).map(x=>`<div class="it"><b>${esc(TT(x.title))}${x.company?" · "+esc(x.company):""}</b><span class="note">${esc(mFmt(x.from))}${x.from||x.to?" – ":""}${esc(x.to?mFmt(x.to):(x.from?t("present"):""))}</span>${x.description?`<div class="pre">${esc(TT(x.description))}</div>`:""}</div>`).join("");
+  const edu=(p.education||[]).map(x=>`<div class="it"><b>${esc(x.school)}</b><span class="note">${esc([TT(x.degree),x.year].filter(Boolean).join(" · "))}</span></div>`).join("");
+  const cer=(p.certs||[]).map(x=>`<div class="it"><b>${x.url?`<a href="${esc(safeUrl(x.url))}" target="_blank" rel="noopener">${esc(TT(x.title))}</a>`:esc(TT(x.title))}</b><span class="note">${esc([x.issuer,x.issued?t("issued")+" "+dFmt(x.issued):"",x.expiry?t("expires")+" "+dFmt(x.expiry):""].filter(Boolean).join(" · "))}</span></div>`).join("");
   const bio=[["ktp",maskKtp(p.ktp)],["dob",p.dob?dFmt(p.dob):""],["nat",p.nationality],["city",p.city],["lang",p.languages],["emg",[p.emergencyName,p.emergencyPhone].filter(Boolean).join(" · ")]].filter(x=>x[1]).map(x=>`<div><dt>${esc(t(x[0]))}</dt><dd>${esc(x[1])}</dd></div>`).join("");
   const sec=(title,body)=>body?`<div class="panel"><h2>${esc(title)}</h2>${body}</div>`:"";
   return `<div style="margin-top:16px"><button class="btn small" data-a="back">← ${esc(t("back"))}</button></div>${msg()}
@@ -341,7 +355,8 @@ function detail(){
    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="btn primary" data-a="saveAdmin"${S.busy?" disabled":""}>${esc(t("save"))}</button><button class="btn danger" data-a="reset">${esc(S.arm?t("resetC"):t("reset"))}</button><button class="btn danger" data-a="delAsk">${esc(t("del"))}</button></div>
    <p class="note">${esc(t("updated"))}: ${esc(p.updatedAt?new Date(p.updatedAt).toLocaleString(lang==="id"?"id-ID":"en-GB"):"—")}</p></div>
   ${(()=>{const m=missingP(p);return `<div class="panel"><h2>${esc(m.length?t("incT")+" ("+m.length+")":t("complete"))}</h2>${m.length?`<div style="display:flex;gap:6px;flex-wrap:wrap">${m.map(x=>`<span class="pill bad">${esc(x)}</span>`).join("")}</div>`:`<span class="pill onsite">✓</span>`}</div>`})()}
-  ${sec(t("about"),(p.about?`<div class="pre">${esc(p.about)}</div>`:"")+(p.qualifications?`<div class="pre note" style="margin-top:8px">${esc(p.qualifications)}</div>`:""))}
+  <div class="panel"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="btn small" data-a="trToggle"${S.trBusy?" disabled":""}>🌐 ${esc(S.trBusy?t("trBusy"):(S.trOn?t("trOff"):t("trB")))}</button>${S.trOn?`<span class="note">${esc(t("trNote"))}</span>`:""}</div></div>
+  ${sec(t("about"),(p.about?`<div class="pre">${esc(TT(p.about))}</div>`:"")+(p.qualifications?`<div class="pre note" style="margin-top:8px">${esc(TT(p.qualifications))}</div>`:""))}
   ${sec(t("exp"),exp?`<div class="tl">${exp}</div>`:"")}${sec(t("edu"),edu?`<div class="tl">${edu}</div>`:"")}${sec(t("certs"),cer?`<div class="tl">${cer}</div>`:"")}
   ${sec(t("bio"),bio?`<dl class="bio">${bio}</dl>`:"")}
   <div class="panel soon"><h2>${esc(t("soonT"))}</h2><p style="margin:0">${esc(t("soonB"))}</p></div>`;
@@ -484,12 +499,13 @@ document.addEventListener("click",async e=>{
   const el=e.target.closest("[data-a]");if(!el)return;
   const a=el.dataset.a;
   if(el.tagName==="A"&&el.getAttribute("href")==="#")e.preventDefault();
-  if(a==="lang"){lang=el.dataset.v;try{localStorage.setItem("icadm-lang",lang)}catch(_){}render()}
+  if(a==="lang"){lang=el.dataset.v;try{localStorage.setItem("icadm-lang",lang)}catch(_){}render();if(S.trOn&&S.view!=="gate"&&S.id)doTranslate()}
+  else if(a==="trToggle"){S.trOn=!S.trOn;if(S.trOn)doTranslate();else render()}
   else if(a==="open"){S.key=document.getElementById("keyIn").value;await load()}
   else if(a==="refresh")await load();
   else if(a==="out"){S.key="";S.people=[];S.view="gate";S.msg=null;try{sessionStorage.removeItem("icadm-key")}catch(_){}render()}
   else if(a==="ic"){S.ic=S.ic===el.dataset.v?"":el.dataset.v;render()}
-  else if(a==="open1"){const p=S.people.find(x=>x.id===el.dataset.id);if(p){S.id=p.id;S.view="detail";S.arm=false;S.msg=null;S.draft={status:p.status||"onsite",startDate:p.startDate||"",endDate:p.endDate||"",adminNotes:p.adminNotes||""};render();window.scrollTo(0,0)}}
+  else if(a==="open1"){const p=S.people.find(x=>x.id===el.dataset.id);if(p){S.id=p.id;S.view="detail";S.arm=false;S.msg=null;S.draft={status:p.status||"onsite",startDate:p.startDate||"",endDate:p.endDate||"",adminNotes:p.adminNotes||""};render();window.scrollTo(0,0);if(S.trOn)doTranslate()}}
   else if(a==="back"){S.view="list";S.id=null;S.msg=null;render()}
   else if(a==="certOpen"){const p=S.people.find(x=>x.id===el.dataset.id);
     if(p&&(!p.endDate||(p.startDate&&p.endDate<p.startDate))){S.msg=(p.name||"")+": "+(p.endDate?t("badEnd"):t("noEnd"));S.ok=false;render();window.scrollTo(0,0);return}
