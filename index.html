@@ -119,7 +119,7 @@ en:{brand:"EcoOils HSSE Database",sub:"For safety officers and managers of the i
  s7:"CV",cvOn:"CV on record",cvNone:"No CV uploaded yet",cvRm:"Remove CV",cvH:"PDF or Word, up to 8 MB",
  s8:"Personal details",dob:"Date of birth",nat:"Nationality",city:"Home city and country",lang:"Languages",en:"Emergency contact name",ep:"Emergency contact phone",
  present:"Present",none:"Nothing added",onsite:"On site",left:"Left site",expires:"Expires",issued:"Issued",
- join:"Date of joining the Project",ktp:"KTP number (last 4 digits only)",ktpH:"Type only the last 4 digits. The rest is hidden and shown as X.",nktp:"Enter the last 4 digits of your KTP number.",reqNote:"All fields and uploads are required. Capital letters and spacing are corrected automatically as you type.",reqMsg:"Please complete all required items. Missing:",photoL:"Profile photo",cvL:"CV",certFile:"Certificate file",optional:"optional",cropT:"Adjust your photo",cropH:"Drag to move. Use the slider to zoom in or out.",use:"Use photo",cancel:"Cancel",project:"Project",projOther:"Project name",joined:"Joined",hint:"Your status on site and leaving date are kept by the HSSE office."},
+ join:"Date of joining the Project",leave:"Date of leaving the Project (last working day)",leaveH:"Fill this in when your last working day is confirmed. Your Certificate of Appreciation cannot be issued until this date is entered.",endBefore:"must not be before the date of joining",ktp:"KTP number (last 4 digits only)",ktpH:"Type only the last 4 digits. The rest is hidden and shown as X.",nktp:"Enter the last 4 digits of your KTP number.",reqNote:"All fields and uploads are required. Capital letters and spacing are corrected automatically as you type.",reqMsg:"Please complete all required items. Missing:",photoL:"Profile photo",cvL:"CV",certFile:"Certificate file",optional:"optional",cropT:"Adjust your photo",cropH:"Drag to move. Use the slider to zoom in or out.",use:"Use photo",cancel:"Cancel",project:"Project",projOther:"Project name",joined:"Joined",hint:"Your status on site and leaving date are kept by the HSSE office."},
 id:{brand:"EcoOils HSSE Database",sub:"Untuk petugas dan manajer keselamatan kontraktor pelaksana",
  gateT:"Profil lokasi Anda",gateP:"Perbarui data, CV dan sertifikat Anda. Hanya kantor HSSE yang dapat melihatnya.",
  email:"Email",pin:"Kode akses (minimal 6 karakter)",open:"Buka profil saya",create:"Buat profil saya",
@@ -137,7 +137,7 @@ id:{brand:"EcoOils HSSE Database",sub:"Untuk petugas dan manajer keselamatan kon
  s7:"CV",cvOn:"CV tersimpan",cvNone:"CV belum diunggah",cvRm:"Hapus CV",cvH:"PDF atau Word, maksimal 8 MB",
  s8:"Data pribadi",dob:"Tanggal lahir",nat:"Kewarganegaraan",city:"Kota dan negara asal",lang:"Bahasa",en:"Nama kontak darurat",ep:"Telepon kontak darurat",
  present:"Sekarang",none:"Belum ada",onsite:"Di lokasi",left:"Sudah keluar",expires:"Berlaku sampai",issued:"Terbit",
- join:"Tanggal bergabung di Proyek",ktp:"Nomor KTP (4 digit terakhir saja)",ktpH:"Ketik hanya 4 digit terakhir. Sisanya disembunyikan dan ditampilkan sebagai X.",nktp:"Isi 4 digit terakhir nomor KTP Anda.",reqNote:"Semua kolom dan unggahan wajib diisi. Huruf kapital dan spasi diperbaiki otomatis saat Anda mengetik.",reqMsg:"Mohon lengkapi semua data wajib. Belum diisi:",photoL:"Foto profil",cvL:"CV",certFile:"Berkas sertifikat",optional:"opsional",cropT:"Atur foto Anda",cropH:"Geser untuk memindahkan. Gunakan penggeser untuk memperbesar atau memperkecil.",use:"Pakai foto",cancel:"Batal",project:"Proyek",projOther:"Nama proyek",joined:"Bergabung",hint:"Status di lokasi dan tanggal keluar dicatat oleh kantor HSSE."}
+ join:"Tanggal bergabung di Proyek",leave:"Tanggal keluar dari Proyek (hari kerja terakhir)",leaveH:"Isi setelah hari kerja terakhir Anda dipastikan. Sertifikat Penghargaan Anda tidak dapat diterbitkan sebelum tanggal ini diisi.",endBefore:"tidak boleh lebih awal dari tanggal bergabung",ktp:"Nomor KTP (4 digit terakhir saja)",ktpH:"Ketik hanya 4 digit terakhir. Sisanya disembunyikan dan ditampilkan sebagai X.",nktp:"Isi 4 digit terakhir nomor KTP Anda.",reqNote:"Semua kolom dan unggahan wajib diisi. Huruf kapital dan spasi diperbaiki otomatis saat Anda mengetik.",reqMsg:"Mohon lengkapi semua data wajib. Belum diisi:",photoL:"Foto profil",cvL:"CV",certFile:"Berkas sertifikat",optional:"opsional",cropT:"Atur foto Anda",cropH:"Geser untuk memindahkan. Gunakan penggeser untuk memperbesar atau memperkecil.",use:"Pakai foto",cancel:"Batal",project:"Proyek",projOther:"Nama proyek",joined:"Bergabung",hint:"Status di lokasi dan tanggal keluar dicatat oleh kantor HSSE."}
 };
 let lang="en";try{const l=localStorage.getItem("icp-lang");if(l==="id"||l==="en")lang=l;else if((navigator.language||"").startsWith("id"))lang="id"}catch(e){}
 const t=k=>TX[lang][k]||TX.en[k]||k;
@@ -183,7 +183,7 @@ const FMT={name:"title",positionOther:"title",contractorOther:"title",nationalit
 const LFMT={"experience.title":"title","experience.company":"title","experience.description":"sent","education.school":"title","education.degree":"title","certs.title":"title","certs.issuer":"title"};
 const fmtOf=el=>el.dataset.l?LFMT[el.dataset.l+"."+el.dataset.k]:(el.dataset.f?FMT[el.dataset.f]:undefined);
 
-const blankProfile=()=>({name:"",ktp:"",startDate:"",project:PROJECTS[0],projectOther:"",position:"Safety Officer",positionOther:"",contractor:"GSB",contractorOther:"",phone:"",linkedin:"",dob:"",nationality:"",city:"",languages:"",emergencyName:"",emergencyPhone:"",about:"",qualifications:"",experience:[],education:[],certs:[],photo:null,hasCv:false,cvName:"",status:"onsite"});
+const blankProfile=()=>({name:"",ktp:"",startDate:"",endDate:"",project:PROJECTS[0],projectOther:"",position:"Safety Officer",positionOther:"",contractor:"GSB",contractorOther:"",phone:"",linkedin:"",dob:"",nationality:"",city:"",languages:"",emergencyName:"",emergencyPhone:"",about:"",qualifications:"",experience:[],education:[],certs:[],photo:null,hasCv:false,cvName:"",status:"onsite"});
 const S={showErr:false,miss:new Set(),screen:"gate",email:"",pin:"",consent:false,isNew:false,P:blankProfile(),newPhoto:null,newCv:null,removeCv:false,certFiles:{},busy:false,msg:null,msgOk:false};
 
 /* ---------- API ---------- */
@@ -263,6 +263,7 @@ function missingList(){
   if(P.contractor==="Other"&&e(P.contractorOther))add("f:contractorOther",t("icOther"));
   if(P.project==="Other"&&e(P.projectOther))add("f:projectOther",t("projOther"));
   if(e(P.startDate))add("f:startDate",t("join"));
+  if(P.endDate&&P.startDate&&P.endDate<P.startDate)add("f:endDate",t("leave")+" "+t("endBefore"));
   if(ktp4(P.ktp).length!==4)add("f:ktp",t("ktp"));
   [["phone","phone"],["linkedin","linkedin"],["about","about"],["qualifications","quals"],["dob","dob"],["nationality","nat"],["city","city"],["languages","lang"],["emergencyName","en"],["emergencyPhone","ep"]].forEach(([k,l])=>{if(e(P[k]))add("f:"+k,t(l))});
   if(!((P.hasCv&&!S.removeCv)||S.newCv))add("cv",t("cvL"));
@@ -299,6 +300,7 @@ function gate(){
 }
 function inp(k,l,type,ph){const f=FMT[k];return `<label class="f"><span>${esc(t(l))} <b class="req">*</b></span><input data-f="${k}"${K("f:"+k)} type="${type||"text"}" value="${esc(S.P[k])}"${f?` autocapitalize="${f==="title"?"words":"sentences"}"`:""}${ph?` placeholder="${esc(ph)}"`:""}></label>`}
 function ta(k,l,ph){return `<label class="f full"><span>${esc(t(l))} <b class="req">*</b></span><textarea data-f="${k}"${K("f:"+k)} spellcheck="true" autocapitalize="sentences"${ph?` placeholder="${esc(ph)}"`:""}>${esc(S.P[k])}</textarea></label>`}
+function endField(){return `<label class="f"><span>${esc(t("leave"))}</span><input data-f="endDate"${K("f:endDate")} type="date" value="${esc(S.P.endDate)}"><span class="note" style="font-weight:400;margin-top:4px">${esc(t("leaveH"))}</span></label>`}
 function ktpField(){return `<label class="f"><span>${esc(t("ktp"))} <b class="req">*</b></span><div class="row" style="flex-wrap:nowrap;gap:8px"><span class="mask">XXXX XXXX XXXX</span><input data-f="ktp"${K("f:ktp")} inputmode="numeric" maxlength="4" autocomplete="off" placeholder="1234" style="width:90px" value="${esc(S.P.ktp)}"></div><span class="note" style="font-weight:400;margin-top:4px">${esc(t("ktpH"))}</span></label>`}
 function opts(a,cur){return a.map(v=>`<option${v===cur?" selected":""}>${esc(v)}</option>`).join("")}
 function editor(){
@@ -312,7 +314,7 @@ function editor(){
   <label class="f"><span>${esc(t("contractor"))}</span><select data-f="contractor" data-r="1">${opts([...ICS,"Other"],P.contractor)}</select></label>
   ${P.contractor==="Other"?inp("contractorOther","icOther"):""}
   <label class="f"><span>${esc(t("project"))}</span><select data-f="project" data-r="1">${opts(PROJECTS,P.project)}</select></label>
-  ${P.project==="Other"?inp("projectOther","projOther"):""}${ktpField()}${inp("startDate","join","date")}</div></div>
+  ${P.project==="Other"?inp("projectOther","projOther"):""}${ktpField()}${inp("startDate","join","date")}${endField()}</div></div>
   <div class="card"><h2>${esc(t("s2"))}</h2><div class="grid"><label class="f"><span>${esc(t("email"))}</span><input value="${esc(S.email)}" disabled></label>${inp("phone","phone","tel")}
   <label class="f full"><span>${esc(t("linkedin"))}</span><input data-f="linkedin" type="url" value="${esc(P.linkedin)}" placeholder="https://www.linkedin.com/in/..."></label></div></div>
   <div class="card"><h2>${esc(t("s3"))}</h2><div class="grid">${ta("about","about")}${ta("qualifications","quals",t("qualsH"))}</div></div>
