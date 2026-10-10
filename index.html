@@ -109,7 +109,7 @@ en:{brand:"EcoOils HSSE Database",sub:"For safety officers and managers of the i
  nf:"No profile found for this email. Choose Create my profile.",bp:"Wrong email or passcode.",pr:"Your passcode was reset by the HSSE office. Enter a new passcode (6 or more characters) and tap Open my profile.",
  weak:"Passcode must be at least 6 characters.",bemail:"Enter a valid email.",nname:"Enter your full name.",ncons:"Please tick the agreement to create a profile.",
  big:"A file is too large (maximum 8 MB).",btype:"That file type is not accepted. Use PDF, JPG, PNG or Word.",srv:"Something went wrong. Try again in a moment.",nosetup:"This site is not connected yet. Set the web app link in index.html.",
- saved:"Profile saved.",saving:"Saving...",save:"Save profile",preview:"Preview",edit:"Edit",out:"Sign out",
+ saved:"Profile saved.",show:"Show",hide:"Hide",waT:"Let your crew know",waP:"Send a ready WhatsApp message so every crew member knows the Certificate of Appreciation is only issued when the profile is created properly and complete.",waB:"Send WhatsApp message",waMsg:"Hello. Please create or update your profile in the EcoOils HSSE Database: ",waMsg2:". Note: the Certificate of Appreciation is only issued when your profile is created properly and is complete (all fields and uploads filled in, and your date of leaving entered). Please enter correct and true information.",saving:"Saving...",save:"Save profile",preview:"Preview",edit:"Edit",out:"Sign out",
  s1:"Photo and name",photo:"Profile photo",choose:"Choose photo",name:"Full name",position:"Position",posOther:"Position (type it)",contractor:"Contractor",icOther:"Contractor name",
  s2:"Contact",phone:"Phone",linkedin:"LinkedIn profile link",
  s3:"About",about:"Short summary",quals:"Qualifications",qualsH:"Degrees, NEBOSH, IOSH, first aid, other training",
@@ -127,7 +127,7 @@ id:{brand:"EcoOils HSSE Database",sub:"Untuk petugas dan manajer keselamatan kon
  nf:"Profil untuk email ini tidak ditemukan. Pilih Buat profil saya.",bp:"Email atau kode akses salah.",pr:"Kode akses Anda direset oleh kantor HSSE. Isi kode akses baru (minimal 6 karakter) lalu ketuk Buka profil saya.",
  weak:"Kode akses minimal 6 karakter.",bemail:"Masukkan email yang valid.",nname:"Isi nama lengkap Anda.",ncons:"Centang persetujuan untuk membuat profil.",
  big:"Ukuran berkas terlalu besar (maksimal 8 MB).",btype:"Jenis berkas tidak diterima. Gunakan PDF, JPG, PNG atau Word.",srv:"Terjadi kesalahan. Coba lagi sebentar lagi.",nosetup:"Situs belum terhubung. Isi tautan web app di index.html.",
- saved:"Profil tersimpan.",saving:"Menyimpan...",save:"Simpan profil",preview:"Pratinjau",edit:"Ubah",out:"Keluar",
+ saved:"Profil tersimpan.",show:"Tampilkan",hide:"Sembunyikan",waT:"Beritahu kru Anda",waP:"Kirim pesan WhatsApp siap pakai agar setiap anggota kru tahu bahwa Sertifikat Apresiasi hanya diterbitkan jika profil dibuat dengan benar dan lengkap.",waB:"Kirim pesan WhatsApp",waMsg:"Halo. Mohon buat atau perbarui profil Anda di EcoOils HSSE Database: ",waMsg2:". Catatan: Sertifikat Apresiasi hanya diterbitkan jika profil Anda dibuat dengan benar dan lengkap (semua isian dan unggahan terisi, dan tanggal keluar dari Proyek diisi). Mohon isi dengan informasi yang benar.",saving:"Menyimpan...",save:"Simpan profil",preview:"Pratinjau",edit:"Ubah",out:"Keluar",
  s1:"Foto dan nama",photo:"Foto profil",choose:"Pilih foto",name:"Nama lengkap",position:"Jabatan",posOther:"Jabatan (ketik)",contractor:"Kontraktor",icOther:"Nama kontraktor",
  s2:"Kontak",phone:"Telepon",linkedin:"Tautan profil LinkedIn",
  s3:"Tentang",about:"Ringkasan singkat",quals:"Kualifikasi",qualsH:"Gelar, NEBOSH, IOSH, P3K, pelatihan lain",
@@ -282,7 +282,8 @@ function refreshBad(){if(!S.showErr)return;S.miss=new Set(missingList().map(x=>x
 /* ---------- render ---------- */
 function topbar(){return `<div class="top"><div class="brand"><img src="${LOGO}" alt="EcoOils"><small>${esc(t("brand"))}<br>${esc(COMPANY)}</small></div>
  <div class="seg" role="group" aria-label="Language"><button data-a="lang" data-v="en" aria-pressed="${lang==="en"}">EN</button><button data-a="lang" data-v="id" aria-pressed="${lang==="id"}">ID</button></div></div>`}
-function msgHtml(){return S.msg?`<div class="msg ${S.msgOk?"ok":""}" role="status">${esc(S.msg)}</div>`:""}
+function waHtml(){return S.waOffer&&S.msgOk&&S.screen!=="gate"?`<div class="card"><h2>${esc(t("waT"))}</h2><p class="note" style="margin-top:0">${esc(t("waP"))}</p><div class="row"><button class="btn p" data-a="wa">${esc(t("waB"))}</button><button class="btn s" data-a="waX">&times;</button></div></div>`:""}
+function msgHtml(){return (S.msg?`<div class="msg ${S.msgOk?"ok":""}" role="status">${esc(S.msg)}</div>`:"")+waHtml()}
 
 function render(){
   const app=document.getElementById("app");
@@ -294,7 +295,7 @@ function render(){
 function gate(){
   return `<div class="gate"><h1>${esc(t("gateT"))}</h1><p class="note" style="margin-top:0">${esc(t("gateP"))}</p>${msgHtml()}
   <div class="card"><div class="grid"><label class="f full"><span>${esc(t("email"))}</span><input id="g_email" type="email" autocomplete="email" value="${esc(S.email)}"></label>
-  <label class="f full"><span>${esc(t("pin"))}</span><input id="g_pin" type="password" autocomplete="current-password" value="${esc(S.pin)}"></label></div>
+  <label class="f full"><span>${esc(t("pin"))}</span><div class="row" style="flex-wrap:nowrap;gap:8px"><input id="g_pin" type="password" autocomplete="current-password" value="${esc(S.pin)}" style="flex:1;min-width:0"><button type="button" class="btn s" data-a="peek">${esc(t("show"))}</button></div></label></div>
   <label class="row" style="margin-top:12px;align-items:flex-start"><input type="checkbox" id="g_consent"${S.consent?" checked":""}><span class="note">${esc(t("consent"))}</span></label>
   <div class="row" style="margin-top:14px"><button class="btn p" data-a="login"${S.busy?" disabled":""}>${esc(t("open"))}</button><button class="btn" data-a="register"${S.busy?" disabled":""}>${esc(t("create"))}</button></div></div></div>`;
 }
@@ -351,7 +352,7 @@ function view(){
   const cer=P.certs.map(x=>`<div class="it"><b>${esc(x.title)}</b><span class="sub">${esc([x.issuer,x.issued?t("issued")+" "+dFmt(x.issued):"",x.expiry?t("expires")+" "+dFmt(x.expiry):""].filter(Boolean).join(" · "))}</span></div>`).join("");
   const bio=[["ktp",maskKtp(P.ktp)],["dob",dFmt(P.dob)],["nat",P.nationality],["city",P.city],["lang",P.languages],["en",[P.emergencyName,P.emergencyPhone].filter(Boolean).join(" · ")]].filter(x=>x[1]).map(x=>`<div><dt>${esc(t(x[0]))}</dt><dd>${esc(x[1])}</dd></div>`).join("");
   return `${msgHtml()}<div class="card hero"><div class="banner"></div><div class="body">${avatar(P)}<h1>${esc(P.name||"—")}</h1><div class="headline">${esc(line)}</div><div class="sub">${esc([projName(P),COMPANY].filter(Boolean).join(" · "))}</div>
-  <div class="chips"><span class="chip">${esc(P.status==="left"?t("left"):t("onsite"))}</span>${P.startDate?`<span class="chip">${esc(t("joined"))} ${esc(dFmt(P.startDate))}</span>`:""}${S.email?`<span class="chip">${esc(S.email)}</span>`:""}${P.phone?`<span class="chip">${esc(P.phone)}</span>`:""}${P.linkedin?`<a class="chip" href="${esc(P.linkedin)}" target="_blank" rel="noopener">LinkedIn ↗</a>`:""}${P.hasCv||S.newCv?`<span class="chip">CV ✓</span>`:""}</div></div></div>
+  <div class="chips"><span class="chip">${esc((P.status==="left"||P.endDate)?t("left"):t("onsite"))}</span>${P.startDate?`<span class="chip">${esc(t("joined"))} ${esc(dFmt(P.startDate))}</span>`:""}${S.email?`<span class="chip">${esc(S.email)}</span>`:""}${P.phone?`<span class="chip">${esc(P.phone)}</span>`:""}${P.linkedin?`<a class="chip" href="${esc(P.linkedin)}" target="_blank" rel="noopener">LinkedIn ↗</a>`:""}${P.hasCv||S.newCv?`<span class="chip">CV ✓</span>`:""}</div></div></div>
   ${sec(t("s3"),(P.about?`<div class="pre">${esc(P.about)}</div>`:"")+(P.qualifications?`<div class="pre note" style="margin-top:8px">${esc(P.qualifications)}</div>`:""))}
   ${sec(t("s4"),exp?`<div class="tl">${exp}</div>`:"")}${sec(t("s5"),edu?`<div class="tl">${edu}</div>`:"")}${sec(t("s6"),cer?`<div class="tl">${cer}</div>`:"")}
   ${sec(t("s8"),bio?`<dl class="bio">${bio}</dl>`:"")}
@@ -399,7 +400,7 @@ async function doSave(){
   const profile={...S.P};delete profile.photo;profile.ktp=ktp4(profile.ktp);
   try{
     const r=await api({action:"save",email:S.email,pin:S.pin,consent:S.consent,profile,files,removeCv:S.removeCv&&!S.newCv,certFiles:S.certFiles});
-    if(r.ok){S.P=normProfile(r.profile);S.newPhoto=null;S.newCv=null;S.removeCv=false;S.certFiles={};S.isNew=false;setMsg(t("saved"),true)}
+    if(r.ok){S.P=normProfile(r.profile);S.newPhoto=null;S.newCv=null;S.removeCv=false;S.certFiles={};S.isNew=false;S.waOffer=true;setMsg(t("saved"),true)}
     else setMsg(errText(r.error));
   }catch(e){setMsg(e&&e.message==="nosetup"?t("nosetup"):t("srv"))}
   S.busy=false;render();window.scrollTo(0,0);
@@ -409,12 +410,15 @@ document.addEventListener("click",async e=>{
   const el=e.target.closest("[data-a]");if(!el)return;
   const a=el.dataset.a;
   if(a==="lang"){lang=el.dataset.v;try{localStorage.setItem("icp-lang",lang)}catch(_){}render()}
+  else if(a==="peek"){const i=document.getElementById("g_pin");const h=i.type==="password";i.type=h?"text":"password";el.textContent=t(h?"hide":"show")}
+  else if(a==="wa"){const u=location.origin+location.pathname;window.open("https://wa.me/?text="+encodeURIComponent(t("waMsg")+u+t("waMsg2")),"_blank","noopener")}
+  else if(a==="waX"){S.waOffer=false;render()}
   else if(a==="login")await doLogin();
   else if(a==="register")await doRegister();
   else if(a==="save")await doSave();
   else if(a==="preview"){S.screen="view";setMsg(null);render();window.scrollTo(0,0)}
   else if(a==="editMode"){S.screen="edit";render();window.scrollTo(0,0)}
-  else if(a==="signout"){S.screen="gate";S.pin="";S.P=blankProfile();setMsg(null);render()}
+  else if(a==="signout"){S.waOffer=false;S.screen="gate";S.pin="";S.P=blankProfile();setMsg(null);render()}
   else if(a==="addList"){const l=el.dataset.l;S.P[l].push(l==="experience"?{title:"",company:"",from:"",to:"",description:""}:l==="education"?{school:"",degree:"",year:""}:{title:"",issuer:"",issued:"",expiry:"",fileId:"",fileName:""});render()}
   else if(a==="rmList"){const l=el.dataset.l,i=+el.dataset.i;S.P[l].splice(i,1);if(l==="certs"){const nf={};Object.keys(S.certFiles).forEach(k=>{k=+k;if(k<i)nf[k]=S.certFiles[k];else if(k>i)nf[k-1]=S.certFiles[k]});S.certFiles=nf}render()}
   else if(a==="rmCv"){S.removeCv=true;render()}
