@@ -45,14 +45,16 @@ label.f>span{display:block;font:500 11px var(--f-mono);text-transform:uppercase;
 .gate{max-width:420px;margin:8vh auto 0}
 .msg{padding:10px 12px;border-radius:6px;margin:12px 0;background:var(--bad-bg);color:var(--bad);font-weight:500}
 .msg.ok{background:var(--ok-bg);color:var(--ok)}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0 10px}
-.stat{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+.stats{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;margin:18px 0 10px;padding-bottom:6px}
+.stat{flex:0 0 auto;min-width:132px;scroll-snap-align:start;text-align:left;cursor:pointer;font:inherit;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+.stat[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:1px}
+.stat .n,.stat .l{display:block}
 .stat .n{font:800 40px/1 var(--f-display);font-variant-numeric:tabular-nums}
 .stat .l{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--mute);margin-top:4px}
 .stat.main{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:inset 0 -5px 0 var(--gold)}
 .stat.main .l{color:#fff;opacity:.9}
-.ics{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.ic{display:flex;align-items:baseline;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:6px 12px;cursor:pointer}
+.ics{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;margin-bottom:14px;padding-bottom:6px}
+.ic{flex:0 0 auto;scroll-snap-align:start;font:inherit;color:inherit;display:flex;align-items:baseline;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:6px 12px;cursor:pointer}
 .ic[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent)}
 .ic b{font:800 22px/1 var(--f-display);font-variant-numeric:tabular-nums}
 .ic span{font:500 12px var(--f-mono);color:var(--mute)}
@@ -71,6 +73,8 @@ label.f>span{display:block;font:500 11px var(--f-mono);text-transform:uppercase;
 .pill{display:inline-block;padding:2px 9px;border-radius:99px;font:500 11.5px var(--f-mono);white-space:nowrap}
 .pill.onsite{background:var(--ok-bg);color:var(--ok)}
 .pill.left{background:var(--off-bg);color:var(--off)}
+.pill.sent{background:rgba(255,198,0,.25);color:inherit}
+.ic small{font:500 11px var(--f-mono);color:var(--mute)}
 .pill.bad{background:var(--bad-bg);color:var(--bad)}
 .acts{display:flex;gap:6px;align-items:center;flex:none}
 .ico{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;background:var(--surface);color:var(--ink);text-decoration:none;font:600 11px var(--f-mono)}
@@ -155,7 +159,7 @@ const WA_PATH = "M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.
 const TX={
 en:{title:"EcoOils HSSE Database",sub:"Safety officers and managers of the implementation contractors",key:"Admin key",open:"Open",out:"Sign out",
  onsite:"On site now",left:"Left site",nocv:"On site, no CV",total:"Profiles",search:"Search name, position, contractor",allSt:"All status",allPr:"All projects",project:"Project",stOn:"On site",stLeft:"Left",refresh:"Refresh",
- bk:"Wrong admin key.",trB:"Translate crew text",trOff:"Show original",trNote:"Translated automatically from what the crew wrote. Check important details against the original.",trBusy:"Translating...",lk:"Too many wrong attempts. Locked for 15 minutes.",srv:"Could not reach the profile service. Check the web app link and try again.",nosetup:"Set the web app link in admin.html first.",none:"No profiles match.",
+ bk:"Wrong admin key.",stfAll:"All",tot:"total",editB:"Edit profile",editT:"Edit profile",edSaved:"Profile updated",ph2L:"Additional contact number",waPick:"Choose a number for WhatsApp",num1:"Main number",num2:"Additional number",close:"Close",certSentL:"Certificate sent",certMarkB:"Mark certificate as sent",certUndoB:"Undo certificate sent",certSentOn:"Certificate sent on",edEmN:"Emergency contact name",edEmP:"Emergency contact phone",edPosO:"Position (other)",edIcO:"Contractor (other)",edProjO:"Project (other)",edNote:"You are editing the crew member's own details. Photo, CV and certificate files can only be changed by the crew member.",trB:"Translate crew text",trOff:"Show original",trNote:"Translated automatically from what the crew wrote. Check important details against the original.",trBusy:"Translating...",lk:"Too many wrong attempts. Locked for 15 minutes.",srv:"Could not reach the profile service. Check the web app link and try again.",nosetup:"Set the web app link in admin.html first.",none:"No profiles match.",
  joined:"Joined",tenure:"Time on project",back:"All profiles",wa:"WhatsApp",mail:"Email",li:"LinkedIn",cv:"CV",folder:"Drive folder",
  adminT:"Office record",status:"Status",join:"Date of joining the Project",end:"Date left",notes:"Office notes",save:"Save",saved:"Saved",reset:"Reset passcode",resetC:"Click again to reset",resetDone:"Passcode cleared. The person can set a new one.",
  about:"About",quals:"Qualifications",exp:"Experience",edu:"Education",certs:"Certificates",bio:"Personal details",dob:"Date of birth",nat:"Nationality",city:"Home city",lang:"Languages",emg:"Emergency contact",
@@ -166,7 +170,7 @@ en:{title:"EcoOils HSSE Database",sub:"Safety officers and managers of the imple
  soonT:"Coming next",soonB:"Competency assessment for HSSE staff.",days:"days",mo:"mo",yr:"yr"},
 id:{title:"EcoOils HSSE Database",sub:"Petugas dan manajer keselamatan kontraktor pelaksana",key:"Kunci admin",open:"Buka",out:"Keluar",
  onsite:"Di lokasi",left:"Sudah keluar",nocv:"Di lokasi, tanpa CV",total:"Profil",search:"Cari nama, jabatan, kontraktor",allSt:"Semua status",allPr:"Semua proyek",project:"Proyek",stOn:"Di lokasi",stLeft:"Keluar",refresh:"Muat ulang",
- bk:"Kunci admin salah.",trB:"Terjemahkan teks kru",trOff:"Tampilkan asli",trNote:"Diterjemahkan otomatis dari tulisan kru. Periksa detail penting dengan teks asli.",trBusy:"Menerjemahkan...",lk:"Terlalu banyak percobaan salah. Terkunci 15 menit.",srv:"Tidak dapat terhubung ke layanan profil. Periksa tautan web app lalu coba lagi.",nosetup:"Isi dulu tautan web app di admin.html.",none:"Tidak ada profil yang cocok.",
+ bk:"Kunci admin salah.",stfAll:"Semua",tot:"total",editB:"Ubah profil",editT:"Ubah profil",edSaved:"Profil diperbarui",ph2L:"Nomor kontak tambahan",waPick:"Pilih nomor untuk WhatsApp",num1:"Nomor utama",num2:"Nomor tambahan",close:"Tutup",certSentL:"Sertifikat terkirim",certMarkB:"Tandai sertifikat terkirim",certUndoB:"Batalkan tanda terkirim",certSentOn:"Sertifikat terkirim pada",edEmN:"Nama kontak darurat",edEmP:"Telepon kontak darurat",edPosO:"Jabatan (lainnya)",edIcO:"Kontraktor (lainnya)",edProjO:"Proyek (lainnya)",edNote:"Anda mengubah data milik anggota kru. Foto, CV, dan file sertifikat hanya bisa diubah oleh anggota kru.",trB:"Terjemahkan teks kru",trOff:"Tampilkan asli",trNote:"Diterjemahkan otomatis dari tulisan kru. Periksa detail penting dengan teks asli.",trBusy:"Menerjemahkan...",lk:"Terlalu banyak percobaan salah. Terkunci 15 menit.",srv:"Tidak dapat terhubung ke layanan profil. Periksa tautan web app lalu coba lagi.",nosetup:"Isi dulu tautan web app di admin.html.",none:"Tidak ada profil yang cocok.",
  joined:"Bergabung",tenure:"Lama di proyek",back:"Semua profil",wa:"WhatsApp",mail:"Email",li:"LinkedIn",cv:"CV",folder:"Folder Drive",
  adminT:"Catatan kantor",status:"Status",join:"Tanggal bergabung di Proyek",end:"Tanggal keluar",notes:"Catatan kantor",save:"Simpan",saved:"Tersimpan",reset:"Reset kode akses",resetC:"Klik lagi untuk reset",resetDone:"Kode akses dihapus. Orang tersebut dapat membuat yang baru.",
  about:"Tentang",quals:"Kualifikasi",exp:"Pengalaman",edu:"Pendidikan",certs:"Sertifikat",bio:"Data pribadi",dob:"Tanggal lahir",nat:"Kewarganegaraan",city:"Kota asal",lang:"Bahasa",emg:"Kontak darurat",
@@ -181,7 +185,7 @@ const t=k=>TX[lang][k]||TX.en[k]||k;
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const safeUrl=u=>/^https?:\/\//i.test(u||"")?u:"";
 
-const TR={};const S={trOn:false,trBusy:false,key:"",people:[],photos:{},view:"gate",id:null,q:"",ic:"",st:"",pr:"",busy:false,msg:null,ok:false,arm:false,draft:null,cert:null,del:null};
+const TR={};const S={f:"",wa:null,ed:null,trOn:false,trBusy:false,key:"",people:[],photos:{},view:"gate",id:null,q:"",ic:"",st:"",pr:"",busy:false,msg:null,ok:false,arm:false,draft:null,cert:null,del:null};
 try{S.key=sessionStorage.getItem("icadm-key")||""}catch(e){}
 
 /* ---------- helpers ---------- */
@@ -208,10 +212,18 @@ function waNumber(phone){
   if(d.startsWith("00"))d=d.slice(2);else if(d.startsWith("0"))d=DEFAULT_CC+d.slice(1);
   return d.length>=8?d:"";
 }
-function waIcon(phone,label){
-  const n=waNumber(phone);
-  return n?`<a class="ico wa" href="https://wa.me/${n}" target="_blank" rel="noopener" title="${esc(t("wa"))}: +${n}" aria-label="${esc(label||t("wa"))}" data-stop="1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${WA_PATH}"/></svg></a>`
-    :`<span class="ico wa off" title="${esc(t("nonum"))}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${WA_PATH}"/></svg></span>`;
+function waIcon(p,label){
+  const nums=[p.phone,p.phone2].map(waNumber).filter(Boolean).filter((x,i,a)=>a.indexOf(x)===i);
+  const svg=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${WA_PATH}"/></svg>`;
+  if(!nums.length)return `<span class="ico wa off" title="${esc(t("nonum"))}">${svg}</span>`;
+  if(nums.length===1)return `<a class="ico wa" href="https://wa.me/${nums[0]}" target="_blank" rel="noopener" title="${esc(t("wa"))}: +${nums[0]}" aria-label="${esc(label||t("wa"))}" data-stop="1">${svg}</a>`;
+  return `<a class="ico wa" href="#" role="button" data-a="waPick" data-id="${esc(p.id)}" title="${esc(t("waPick"))}" aria-label="${esc(label||t("wa"))}">${svg}</a>`;
+}
+function waModal(){
+  if(!S.wa)return"";
+  const p=S.people.find(x=>x.id===S.wa.id);if(!p)return"";
+  const row=(lab,num)=>{const n=waNumber(num);return n?`<a class="btn primary" style="display:flex;justify-content:space-between;margin-top:8px" href="https://wa.me/${n}" target="_blank" rel="noopener" data-stop="1"><span>${esc(lab)}</span><span>+${n}</span></a>`:""};
+  return `<div class="modal-bg" role="dialog" aria-modal="true"><div class="modal" style="border-top-color:var(--accent)"><h3>${esc(t("waPick"))}</h3><div style="font-weight:600">${esc(p.name||"")}</div>${row(t("num1"),p.phone)}${row(t("num2"),p.phone2)}<div style="margin-top:12px"><button class="btn small" data-a="waClose">${esc(t("close"))}</button></div></div></div>`;
 }
 const AWARD_PATH="M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12zM8.5 14l-1.5 7 5-3 5 3-1.5-7";
 function certIcon(id){const q=S.people.find(x=>x.id===id),ok=q&&q.endDate;return `<a class="ico cr" style="${ok?"":"opacity:.4"}" href="#" role="button" data-a="certOpen" data-id="${esc(id)}" title="${esc(t("mkCert"))}" aria-label="${esc(t("mkCert"))}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${AWARD_PATH}"/></svg></a>`}
@@ -293,10 +305,11 @@ function topBar(){return `<header class="top"><div class="brandrow"><img src="${
  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><div class="seg" role="group" aria-label="Language"><button data-a="lang" data-v="en" aria-pressed="${lang==="en"}">EN</button><button data-a="lang" data-v="id" aria-pressed="${lang==="id"}">ID</button></div>
  ${S.view!=="gate"?`<button class="btn small" data-a="refresh">${esc(t("refresh"))}</button><button class="btn small" data-a="out">${esc(t("out"))}</button>`:""}</div></header>`}
 function msg(){return S.msg?`<div class="msg ${S.ok?"ok":""}" role="status">${esc(S.msg)}</div>`:""}
+function jump(){const el=document.querySelector(".toolbar");if(el)el.scrollIntoView({behavior:"smooth",block:"start"})}
 function render(){
   document.documentElement.lang=lang;
   const app=document.getElementById("app");
-  app.innerHTML=topBar()+(S.view==="gate"?gate():S.view==="detail"?detail():S.view==="cert"?certView():list())+delModal();
+  app.innerHTML=topBar()+(S.view==="gate"?gate():S.view==="detail"?detail():S.view==="cert"?certView():S.view==="edit"?editView():list())+delModal()+waModal();
   if(S.view==="cert")certScale();
 }
 function gate(){
@@ -311,26 +324,27 @@ function list(){
   const rows=S.people.filter(p=>{
     if(S.st&&(p.status||"onsite")!==S.st)return false;
     if(S.pr&&projName(p)!==S.pr)return false;
+    if(S.f==="nocv"&&(p.status==="left"||p.cvUrl))return false;
+    if(S.f==="inc"&&!missingP(p).length)return false;
     if(S.ic){if(S.ic==="Other"){if(ICS.includes(p.contractor))return false}else if(p.contractor!==S.ic)return false}
     return !q||((p.name||"")+" "+posName(p)+" "+icName(p)).toLowerCase().includes(q);
   }).sort((a,b)=>((a.status==="left")-(b.status==="left"))||(a.name||"").localeCompare(b.name||""));
-  const icb=k=>`<button class="ic" data-a="ic" data-v="${k}" aria-pressed="${S.ic===k}"><b>${by(k)}</b><span>${k}</span></button>`;
-  let h=msg()+`<div class="stats"><div class="stat main"><div class="n">${on.length}</div><div class="l">${esc(t("onsite"))}</div></div>
-   <div class="stat"><div class="n">${left.length}</div><div class="l">${esc(t("left"))}</div></div>
-   <div class="stat"><div class="n" style="${on.filter(p=>!p.cvUrl).length?"color:var(--bad)":""}">${on.filter(p=>!p.cvUrl).length}</div><div class="l">${esc(t("nocv"))}</div></div>
-   <div class="stat"><div class="n" style="${S.people.filter(p=>missingP(p).length).length?"color:var(--bad)":""}">${S.people.filter(p=>missingP(p).length).length}</div><div class="l">${esc(t("incN"))}</div></div>
-   <div class="stat"><div class="n">${S.people.length}</div><div class="l">${esc(t("total"))}</div></div></div>
-   <div class="ics">${ICS.map(icb).join("")}${icb("Other")}</div>
+  const tot=k=>S.people.filter(p=>k==="Other"?!ICS.includes(p.contractor):p.contractor===k).length;
+  const icb=k=>`<button class="ic" data-a="ic" data-v="${k}" aria-pressed="${S.ic===k}"><b>${by(k)}</b><span>${k}</span><small>/ ${tot(k)} ${esc(t("tot"))}</small></button>`;
+  const noCv=on.filter(p=>!p.cvUrl).length,inc=S.people.filter(p=>missingP(p).length).length;
+  const sb=(v,n,l,extra,cls)=>`<button class="stat ${cls||""}" data-a="stf" data-v="${v}" aria-pressed="${v==="all"?(!S.st&&!S.f&&!S.ic):(v==="onsite"||v==="left")?S.st===v&&!S.f:S.f===v}"><span class="n" style="${extra||""}">${n}</span><span class="l">${esc(l)}</span></button>`;
+  let h=msg()+`<div class="stats">${sb("onsite",on.length,t("onsite"),"","main")}${sb("left",left.length,t("left"))}${sb("nocv",noCv,t("nocv"),noCv?"color:var(--bad)":"")}${sb("inc",inc,t("incN"),inc?"color:var(--bad)":"")}${sb("all",S.people.length,t("total"))}</div>
+   <div class="ics"><button class="ic" data-a="ic" data-v="" aria-pressed="${!S.ic}"><b>${S.people.length}</b><span>${esc(t("stfAll"))}</span><small>${on.length} ${esc(t("onsite"))}</small></button>${ICS.map(icb).join("")}${tot("Other")?icb("Other"):""}</div>
    <div class="toolbar"><input type="search" id="q" placeholder="${esc(t("search"))}" value="${esc(S.q)}" aria-label="${esc(t("search"))}">
    <select id="stSel"><option value="">${esc(t("allSt"))}</option><option value="onsite"${S.st==="onsite"?" selected":""}>${esc(t("stOn"))}</option><option value="left"${S.st==="left"?" selected":""}>${esc(t("stLeft"))}</option></select>
    ${projects().length>1?`<select id="prSel"><option value="">${esc(t("allPr"))}</option>${projects().map(x=>`<option${S.pr===x?" selected":""}>${esc(x)}</option>`).join("")}</select>`:""}
-   ${S.ic?`<button class="btn small" data-a="ic" data-v="">${esc(S.ic)} ✕</button>`:""}</div>`;
+   ${S.ic?`<button class="btn small" data-a="ic" data-v="">${esc(S.ic)} ✕</button>`:""}${S.f?`<button class="btn small" data-a="stf" data-v="all">${esc(S.f==="nocv"?t("nocv"):t("incN"))} ✕</button>`:""}</div>`;
   if(!rows.length)return h+`<div class="panel empty">${esc(t("none"))}</div>`;
   for(const p of rows){
     h+=`<div class="person" data-a="open1" data-id="${esc(p.id)}" tabindex="0">${avatar(p)}<div class="pinfo"><div class="nm">${esc(p.name||"—")}</div><div class="pos">${esc([posName(p),icName(p),projName(p)].filter(Boolean).join(" · "))}</div>
     <div class="meta">${esc(t("joined"))} ${esc(dFmt(p.startDate))} · ${esc(tenure(p))}</div></div>
-    ${missingP(p).length?`<span class="pill bad" title="${esc(missingP(p).join(", "))}">${esc(t("inc"))} (${missingP(p).length})</span>`:""}<span class="pill ${p.status==="left"?"left":"onsite"}">${esc(p.status==="left"?t("stLeft"):t("stOn"))}</span>
-    <div class="acts">${certIcon(p.id)}${waIcon(p.phone,t("wa")+" "+p.name)}${p.cvUrl?`<a class="ico" href="${esc(safeUrl(p.cvUrl))}" target="_blank" rel="noopener" title="${esc(t("cv"))}" data-stop="1">CV</a>`:`<span class="pill bad">${esc(t("noCv"))}</span>`}</div></div>`;
+    ${missingP(p).length?`<span class="pill bad" title="${esc(missingP(p).join(", "))}">${esc(t("inc"))} (${missingP(p).length})</span>`:""}${p.certSentAt?`<span class="pill sent" title="${esc(dFmt(String(p.certSentAt).slice(0,10)))}">✓ ${esc(t("certSentL"))}</span>`:""}<span class="pill ${p.status==="left"?"left":"onsite"}">${esc(p.status==="left"?t("stLeft"):t("stOn"))}</span>
+    <div class="acts">${certIcon(p.id)}${waIcon(p,t("wa")+" "+p.name)}${p.cvUrl?`<a class="ico" href="${esc(safeUrl(p.cvUrl))}" target="_blank" rel="noopener" title="${esc(t("cv"))}" data-stop="1">CV</a>`:`<span class="pill bad">${esc(t("noCv"))}</span>`}</div></div>`;
   }
   return h;
 }
@@ -345,8 +359,8 @@ function detail(){
   const sec=(title,body)=>body?`<div class="panel"><h2>${esc(title)}</h2>${body}</div>`:"";
   return `<div style="margin-top:16px"><button class="btn small" data-a="back">← ${esc(t("back"))}</button></div>${msg()}
   <div class="head">${avatar(p,true)}<div><h2>${esc(p.name||"—")}</h2><div>${esc([posName(p),icName(p),projName(p)].filter(Boolean).join(" · "))}</div>
-   <div class="meta">${esc(t("joined"))} ${esc(dFmt(p.startDate))} · ${esc(t("tenure"))}: ${esc(tenure(p))}</div>
-   <div class="links" style="margin-top:8px"><button class="btn small primary" style="${p.endDate?"":"opacity:.5"}" data-a="certOpen" data-id="${esc(p.id)}">★ ${esc(t("mkCert"))}</button>${waIcon(p.phone,t("wa"))}${p.email?`<a class="btn small" href="mailto:${esc(p.email)}">${esc(p.email)}</a>`:""}${p.phone?`<span class="btn small" style="cursor:text">${esc(p.phone)}</span>`:""}${safeUrl(p.linkedin)?`<a class="btn small" href="${esc(liRec(p.linkedin))}" target="_blank" rel="noopener">${esc(t("liRec"))}</a><a class="btn small" href="${esc(safeUrl(p.linkedin))}" target="_blank" rel="noopener">${esc(t("liProf"))}</a>`:""}${p.cvUrl?`<a class="btn small" href="${esc(safeUrl(p.cvUrl))}" target="_blank" rel="noopener">${esc(t("cv"))} ↗</a>`:""}${p.folderUrl?`<a class="btn small" href="${esc(safeUrl(p.folderUrl))}" target="_blank" rel="noopener">${esc(t("folder"))} ↗</a>`:""}</div></div></div>
+   <div class="meta">${esc(t("joined"))} ${esc(dFmt(p.startDate))} · ${esc(t("tenure"))}: ${esc(tenure(p))}</div>${p.certSentAt?`<div style="margin-top:6px"><span class="pill sent">✓ ${esc(t("certSentOn"))} ${esc(dFmt(String(p.certSentAt).slice(0,10)))}</span></div>`:""}
+   <div class="links" style="margin-top:8px"><button class="btn small primary" style="${p.endDate?"":"opacity:.5"}" data-a="certOpen" data-id="${esc(p.id)}">★ ${esc(t("mkCert"))}</button>${waIcon(p,t("wa"))}${p.email?`<a class="btn small" href="mailto:${esc(p.email)}">${esc(p.email)}</a>`:""}${p.phone?`<span class="btn small" style="cursor:text">${esc(p.phone)}</span>`:""}${p.phone2?`<span class="btn small" style="cursor:text">${esc(p.phone2)}</span>`:""}<button class="btn small" data-a="editOpen">✎ ${esc(t("editB"))}</button>${safeUrl(p.linkedin)?`<a class="btn small" href="${esc(liRec(p.linkedin))}" target="_blank" rel="noopener">${esc(t("liRec"))}</a><a class="btn small" href="${esc(safeUrl(p.linkedin))}" target="_blank" rel="noopener">${esc(t("liProf"))}</a>`:""}${p.cvUrl?`<a class="btn small" href="${esc(safeUrl(p.cvUrl))}" target="_blank" rel="noopener">${esc(t("cv"))} ↗</a>`:""}${p.folderUrl?`<a class="btn small" href="${esc(safeUrl(p.folderUrl))}" target="_blank" rel="noopener">${esc(t("folder"))} ↗</a>`:""}</div></div></div>
   <div class="panel"><h2>${esc(t("adminT"))}</h2><div class="grid">
    <label class="f"><span>${esc(t("status"))}</span><select data-f="status"><option value="onsite"${d.status!=="left"?" selected":""}>${esc(t("stOn"))}</option><option value="left"${d.status==="left"?" selected":""}>${esc(t("stLeft"))}</option></select></label>
    <label class="f"><span>${esc(t("join"))}</span><input type="date" data-f="startDate" value="${esc(d.startDate)}"></label>
@@ -473,11 +487,28 @@ function certView(){
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn primary" data-a="cCopyBody">${esc(t("cCopy"))}</button><button class="btn" data-a="cCopySub">${esc(t("cCopyS"))}</button>
      <a class="btn" id="cMailTo" data-a="cMail" href="#">${esc(t("cMail"))}</a>${c.edited?`<button class="btn" data-a="cResetMail">${esc(t("cResetM"))}</button>`:""}</div>
     <p class="note">${esc(t("cAttach"))}</p></div>
-   <div class="panel noprint"><h2>${esc(t("cPrev"))}</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" data-a="cPrint">${esc(t("cPrint"))}</button></div>
+   <div class="panel noprint"><h2>${esc(t("cPrev"))}</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" data-a="cPrint">${esc(t("cPrint"))}</button><button class="btn" data-a="certSent"${S.busy?" disabled":""}>${esc(p.certSentAt?t("certUndoB"):t("certMarkB"))}</button>${p.certSentAt?`<span class="pill sent" style="align-self:center">✓ ${esc(t("certSentOn"))} ${esc(dFmt(String(p.certSentAt).slice(0,10)))}</span>`:""}</div>
     <p class="note">${esc(t("cPrintH"))}${SIGNATURE_IMG&&STAMP_IMG?"":" "+esc(t("cNoImg"))}</p></div>
    <div class="certwrap" id="certWrap">${certHtml(p,c)}</div>`;
 }
 
+
+const POSITIONS=["Safety Officer","Safety Supervisor","Safety Advisor","Safety Manager","HSE Manager","HSSE Coordinator","Other"];
+const EDF=["name","position","positionOther","contractor","contractorOther","project","projectOther","ktp","phone","phone2","linkedin","dob","nationality","city","languages","emergencyName","emergencyPhone","about","qualifications"];
+function editView(){
+  const p=S.people.find(x=>x.id===S.id),d=S.ed;
+  if(!p||!d)return `<div class="panel empty">${esc(t("none"))}</div>`;
+  const inp=(k,l,type)=>`<label class="f"><span>${esc(l)}</span><input data-e="${k}" type="${type||"text"}" value="${esc(d[k]||"")}"${k==="ktp"?' inputmode="numeric" maxlength="4"':""}></label>`;
+  const sel=(k,l,arr)=>`<label class="f"><span>${esc(l)}</span><select data-e="${k}" data-er="1">${arr.map(v=>`<option${v===d[k]?" selected":""}>${esc(v)}</option>`).join("")}</select></label>`;
+  const ta=(k,l)=>`<label class="f full"><span>${esc(l)}</span><textarea data-e="${k}" rows="5">${esc(d[k]||"")}</textarea></label>`;
+  const projs=[...new Set(["Mentari",...projects(),"Other"])];
+  const ics=[...ICS,"Other"],poss=POSITIONS.includes(d.position)||!d.position?POSITIONS:[d.position,...POSITIONS];
+  return `<div style="margin-top:16px"><button class="btn small" data-a="editCancel">← ${esc(t("cancel"))}</button></div>${msg()}
+  <div class="panel"><h2>${esc(t("editT"))} · ${esc(p.name||"")}</h2><p class="note" style="margin-top:0">${esc(t("edNote"))}</p>
+  <div class="grid">${inp("name",t("nmL"))}${sel("position",t("posL"),poss)}${d.position==="Other"?inp("positionOther",t("edPosO")):""}${sel("contractor",t("icL"),ics)}${d.contractor==="Other"?inp("contractorOther",t("edIcO")):""}${sel("project",t("project"),projs)}${d.project==="Other"?inp("projectOther",t("edProjO")):""}
+  ${inp("ktp",t("ktp"))}${inp("phone",t("phL"),"tel")}${inp("phone2",t("ph2L"),"tel")}${inp("linkedin",t("li"),"url")}${inp("dob",t("dob"),"date")}${inp("nationality",t("nat"))}${inp("city",t("city"))}${inp("languages",t("lang"))}${inp("emergencyName",t("edEmN"))}${inp("emergencyPhone",t("edEmP"),"tel")}${ta("about",t("about"))}${ta("qualifications",t("quals"))}</div>
+  <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="btn primary" data-a="editSave"${S.busy?" disabled":""}>${esc(t("save"))}</button><button class="btn" data-a="editCancel">${esc(t("cancel"))}</button></div></div>`;
+}
 function delModal(){
   if(!S.del)return"";
   const p=S.people.find(x=>x.id===S.del.id);
@@ -504,8 +535,30 @@ document.addEventListener("click",async e=>{
   else if(a==="open"){S.key=document.getElementById("keyIn").value;await load()}
   else if(a==="refresh")await load();
   else if(a==="out"){S.key="";S.people=[];S.view="gate";S.msg=null;try{sessionStorage.removeItem("icadm-key")}catch(_){}render()}
-  else if(a==="ic"){S.ic=S.ic===el.dataset.v?"":el.dataset.v;render()}
+  else if(a==="ic"){S.ic=S.ic===el.dataset.v?"":el.dataset.v;render();jump()}
   else if(a==="open1"){const p=S.people.find(x=>x.id===el.dataset.id);if(p){S.id=p.id;S.view="detail";S.arm=false;S.msg=null;S.draft={status:p.status||"onsite",startDate:p.startDate||"",endDate:p.endDate||"",adminNotes:p.adminNotes||""};render();window.scrollTo(0,0);if(S.trOn)doTranslate()}}
+  else if(a==="waPick"){S.wa={id:el.dataset.id};render()}
+  else if(a==="waClose"){S.wa=null;render()}
+  else if(a==="stf"){const v=el.dataset.v;if(v==="all"){S.st="";S.f="";S.ic=""}else if(v==="onsite"||v==="left"){S.st=S.st===v&&!S.f?"":v;S.f=""}else{S.f=S.f===v?"":v}render();jump()}
+  else if(a==="editOpen"){const p=S.people.find(x=>x.id===S.id);if(p){S.ed={};EDF.forEach(k=>S.ed[k]=k==="ktp"?ktp4(p.ktp):(p[k]||""));if(!S.ed.position)S.ed.position=POSITIONS[0];if(!S.ed.contractor)S.ed.contractor="GSB";S.view="edit";S.msg=null;render();window.scrollTo(0,0)}}
+  else if(a==="editCancel"){S.view="detail";S.ed=null;S.msg=null;render()}
+  else if(a==="editSave"){
+    S.busy=true;render();
+    try{const r=await api({action:"adminUpdate",id:S.id,fields:{profile:S.ed}});
+      if(r.ok){S.people=S.people.map(p=>p.id===S.id?r.person:p);S.draft={status:r.person.status||"onsite",startDate:r.person.startDate||"",endDate:r.person.endDate||"",adminNotes:r.person.adminNotes||""};S.view="detail";S.ed=null;S.msg=t("edSaved");S.ok=true}
+      else{S.msg=r.error==="bad_key"?t("bk"):t("srv");S.ok=false}
+    }catch(_){S.msg=t("srv");S.ok=false}
+    S.busy=false;render();window.scrollTo(0,0);
+  }
+  else if(a==="certSent"){
+    const p=S.people.find(x=>x.id===S.id);if(!p)return;
+    S.busy=true;render();
+    try{const r=await api({action:"adminUpdate",id:S.id,fields:{certSent:!p.certSentAt}});
+      if(r.ok){S.people=S.people.map(x=>x.id===S.id?r.person:x);S.msg=r.person.certSentAt?t("certSentL"):t("saved");S.ok=true}
+      else{S.msg=t("srv");S.ok=false}
+    }catch(_){S.msg=t("srv");S.ok=false}
+    S.busy=false;render();
+  }
   else if(a==="back"){S.view="list";S.id=null;S.msg=null;render()}
   else if(a==="certOpen"){const p=S.people.find(x=>x.id===el.dataset.id);
     if(p&&(!p.endDate||(p.startDate&&p.endDate<p.startDate))){S.msg=(p.name||"")+": "+(p.endDate?t("badEnd"):t("noEnd"));S.ok=false;render();window.scrollTo(0,0);return}
@@ -548,6 +601,7 @@ document.addEventListener("keydown",e=>{
   if(e.key==="Enter"&&e.target.id==="keyIn"){S.key=e.target.value;load()}
   if(e.key==="Enter"&&e.target.id==="delCode"){const b=document.querySelector('[data-a="delGo"]');if(b)b.click()}
   if(e.key==="Escape"&&S.del){S.del=null;render()}
+  if(e.key==="Escape"&&S.wa){S.wa=null;render()}
 });
 document.addEventListener("input",e=>{
   const el=e.target;
@@ -563,6 +617,7 @@ document.addEventListener("input",e=>{
   else if(el.id==="cPara"&&S.cert){S.cert.para=el.value;S.cert.paraEdited=true;certRefresh()}
   else if(el.id==="emSub"&&S.cert){S.cert.edited=true;S.cert.subject=el.value;S.cert.body=document.getElementById("emBody").value}
   else if(el.id==="emBody"&&S.cert){S.cert.edited=true;S.cert.subject=document.getElementById("emSub").value;S.cert.body=el.value}
+  else if(el.dataset.e&&S.ed&&!el.dataset.er){S.ed[el.dataset.e]=el.dataset.e==="ktp"?(el.value=el.value.replace(/\D/g,"").slice(0,4)):el.value}
   else if(el.dataset.f&&S.draft){S.draft[el.dataset.f]=el.value}
 });
 document.addEventListener("change",e=>{
@@ -570,6 +625,7 @@ document.addEventListener("change",e=>{
   if(el.id==="stSel"){S.st=el.value;render()}
   else if(el.id==="prSel"){S.pr=el.value;render()}
   else if(el.id==="cDate"&&S.cert){S.cert.date=el.value||todayISO();S.cert.edited=false;if(S.cert.step===2)render()}
+  else if(el.dataset.er&&S.ed){S.ed[el.dataset.e]=el.value;render()}
   else if(el.dataset.f==="status"&&S.draft){S.draft.status=el.value;render()}
   else if(el.dataset.f&&S.draft){S.draft[el.dataset.f]=el.value}
 });
