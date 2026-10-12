@@ -34,7 +34,7 @@ const TX={
   revokedP:"This certificate has been revoked and should not be relied on.",
   unkP:"No certificate with this number is in the EcoOils register. Treat it as not issued, and please verify with EcoOils using the form below.",
   name:"Name",pos:"Role",emp:"Employed by",proj:"Project",per:"Period on the Project",iss:"Issued",to:"to",
-  notEmp:"The holder was employed by the Implementation Contractor named above and was not an employee of PT EcoOils Jaya Indonesia.",
+  notEmp:"This is a Certificate of Appreciation only. The holder was not a direct employee of PT EcoOils Jaya Indonesia and served on the Project as HSSE personnel employed by the Implementation Contractor named above. It is not an employment or experience letter.",ctype:"Document",cval:"Certificate of Appreciation",
   askH:"Ask EcoOils to verify",askP:"Send your question to the EcoOils HSSE office. We will reply to the email you give.",who:"Your name",em:"Your email",msg:"Message (optional)",send:"Send request",sent:"Request sent. The EcoOils HSSE office will reply to your email.",
   bad_email:"Please enter a valid email.",err:"Could not reach the verification service. Please try again.",busy:"Too many requests. Please try again later.",
   foot:"EcoOils HSSE Database. This page shows only the details printed on the certificate."},
@@ -44,7 +44,7 @@ const TX={
   revokedP:"Sertifikat ini telah dicabut dan tidak boleh dijadikan acuan.",
   unkP:"Tidak ada sertifikat dengan nomor ini dalam daftar EcoOils. Anggap tidak diterbitkan, dan mohon verifikasi dengan EcoOils melalui formulir di bawah.",
   name:"Nama",pos:"Jabatan",emp:"Dipekerjakan oleh",proj:"Proyek",per:"Periode di Proyek",iss:"Diterbitkan",to:"hingga",
-  notEmp:"Pemegang sertifikat dipekerjakan oleh Kontraktor Pelaksana yang disebutkan di atas dan bukan karyawan PT EcoOils Jaya Indonesia.",
+  notEmp:"Ini hanyalah Sertifikat Penghargaan. Pemegang sertifikat bukan karyawan langsung PT EcoOils Jaya Indonesia dan bertugas di Proyek sebagai personel HSSE yang dipekerjakan oleh Kontraktor Pelaksana yang disebutkan di atas. Dokumen ini bukan surat keterangan kerja atau pengalaman.",ctype:"Dokumen",cval:"Sertifikat Penghargaan",
   askH:"Minta EcoOils memverifikasi",askP:"Kirim pertanyaan Anda ke kantor HSSE EcoOils. Kami akan membalas ke email yang Anda isi.",who:"Nama Anda",em:"Email Anda",msg:"Pesan (opsional)",send:"Kirim permintaan",sent:"Permintaan terkirim. Kantor HSSE EcoOils akan membalas ke email Anda.",
   bad_email:"Masukkan email yang valid.",err:"Layanan verifikasi tidak dapat dihubungi. Silakan coba lagi.",busy:"Terlalu banyak permintaan. Silakan coba lagi nanti.",
   foot:"EcoOils HSSE Database. Halaman ini hanya menampilkan rincian yang tercetak pada sertifikat."}
@@ -65,7 +65,7 @@ function result(){
   if(!r.found)return `<div class="card"><span class="badge unknown">${esc(t("unknown"))}</span><p>${esc(t("unkP"))}</p></div>${ask()}`;
   const rv=r.status==="revoked";
   return `<div class="card"><span class="badge ${rv?"revoked":"valid"}">${esc(t(rv?"revoked":"valid"))}</span><p>${esc(t(rv?"revokedP":"validP"))}</p>
-  <dl><dt>${esc(t("no"))}</dt><dd>${esc(r.no)}</dd><dt>${esc(t("name"))}</dt><dd>${esc(r.name)}</dd><dt>${esc(t("pos"))}</dt><dd>${esc(r.position)}</dd>
+  <dl><dt>${esc(t("ctype"))}</dt><dd>${esc(t("cval"))}</dd><dt>${esc(t("no"))}</dt><dd>${esc(r.no)}</dd><dt>${esc(t("name"))}</dt><dd>${esc(r.name)}</dd><dt>${esc(t("pos"))}</dt><dd>${esc(r.position)}</dd>
   <dt>${esc(t("emp"))}</dt><dd>${esc(r.contractor)}</dd><dt>${esc(t("proj"))}</dt><dd>EcoOils ${esc(r.project)} · PT EcoOils Jaya Indonesia</dd>
   <dt>${esc(t("per"))}</dt><dd>${esc(dF(r.startDate))} ${esc(t("to"))} ${esc(dF(r.endDate))}</dd><dt>${esc(t("iss"))}</dt><dd>${esc(dF(r.issued))}</dd></dl>
   <p class="note" style="margin-top:12px">${esc(t("notEmp"))}</p></div>`;
