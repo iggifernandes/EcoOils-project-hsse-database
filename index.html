@@ -91,7 +91,7 @@ dl.bio dd{margin:0;overflow-wrap:anywhere}
 </head>
 <body>
 <div class="wrap" id="app"></div>
-<div class="shellfoot" id="admfoot"></div>
+<div style="height:90px" aria-hidden="true"></div>
 
 <script>
 /* ===== SET THIS after you deploy Code.gs as a web app (see README.md) ===== */
@@ -293,7 +293,6 @@ function render(){
   let h=topbar();
   if(S.screen==="gate")h+=gate();else if(S.screen==="view")h+=view();else h+=editor();
   app.innerHTML=h;
-  const af=document.getElementById("admfoot");if(af)af.innerHTML=`<a class="btn s" href="admin.html">${esc(t("adm"))}</a>`;
 }
 function gate(){
   return `<div class="gate"><h1>${esc(t("gateT"))}</h1><p class="note" style="margin-top:0">${esc(t("gateP"))}</p>${msgHtml()}
@@ -454,6 +453,8 @@ document.addEventListener("change",async e=>{
   else if(el.dataset.cf!==undefined&&el.files[0]){const f=await fileObj(el.files[0]);if(f){S.certFiles[el.dataset.cf]=f;setMsg(null);render();refreshBad()}else el.value=""}
 });
 render();
+/* HSSE office shortcut: Ctrl+Alt+M opens the admin site (no visible button for crew) */
+document.addEventListener("keydown",function(e){if(e.ctrlKey&&e.altKey&&!e.shiftKey&&!e.metaKey&&(e.code==="KeyM"||String(e.key).toLowerCase()==="m")){e.preventDefault();location.href="admin.html"}});
 </script>
 </body>
 </html>
