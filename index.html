@@ -206,7 +206,7 @@ async function fileObj(file){
   if(!okType){setMsg(t("btype"));render();return null}
   return{name:file.name,mime:file.type,data:await readB64(file)};
 }
-/* Photo crop tool: drag to move, slider / buttons / wheel to zoom. Returns a 480px square JPEG data URL, or null if cancelled. */
+/* Photo crop tool: drag to move, slider / buttons / wheel to zoom. Returns a 400px square JPEG data URL, or null if cancelled. */
 function openCrop(file){
   return new Promise((res,rej)=>{
     const img=new Image(),url=URL.createObjectURL(file);
@@ -236,7 +236,7 @@ function openCrop(file){
         if(z)setZ(zoom+(z.dataset.z==="+"?.25:-.25));
         else if(c){
           let out=null;
-          if(c.dataset.c==="ok"){const o=document.createElement("canvas");o.width=o.height=480;draw(o,480);out=o.toDataURL("image/jpeg",.85)}
+          if(c.dataset.c==="ok"){const o=document.createElement("canvas");o.width=o.height=400;draw(o,400);out=o.toDataURL("image/jpeg",.8)}
           bg.remove();URL.revokeObjectURL(url);res(out);
         }
       });
