@@ -331,7 +331,7 @@ function prepSig(file){return new Promise((res,rej)=>{
 async function sigSave(name,file){
   S.sigBusy=name;render();
   try{const data=file?await prepSig(file):"";const r=await api({action:"adminSigSet",name,data});
-    if(r.ok){await loadSigs();toast(t(file?"sigDone":"sigGone"))}else toast(t("sigErr"))}catch(e){toast(t("sigErr"))}
+    if(r.ok){await loadSigs();toast(t(file?"sigDone":"sigGone"))}else toast(t("sigErr")+" ["+(r.error||"?")+"]")}catch(e){toast(t("sigErr")+" ["+((e&&e.message)||"?")+"]")}
   S.sigBusy="";render();
 }
 function sigModal(){
