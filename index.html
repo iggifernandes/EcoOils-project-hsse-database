@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>EcoOils HSSE Database</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&display=swap">
 <style>
 :root{
   --bg:#f3f7f5; --card:#ffffff; --ink:#221e1f; --mute:#5f6b66; --line:#d6e0db; --accent:#44a276; --accent-ink:#ffffff; --accent-text:#2b7a55;
@@ -87,6 +87,60 @@ dl.bio dd{margin:0;overflow-wrap:anywhere}
 .crop .zr{display:flex;align-items:center;gap:8px}
 .crop .zr button{width:34px;height:34px;border-radius:50%;border:1px solid var(--accent);background:var(--card);color:var(--accent-text);font-size:20px;line-height:1;cursor:pointer;flex:none}
 .crop input[type=range]{padding:0;border:0;accent-color:var(--accent)}
+/* ===== Shell-minimal skin (v2.0): Jost, flat, 5-colour palette ===== */
+:root{--bg:#fff;--card:#fff;--surface:#fff;--surface2:#fff;--ink:#231f20;--mute:#6e6b6c;--line:#dcdcdc;--accent:#44a276;--accent-ink:#231f20;--accent-text:#2b7a55;--gold:#ffc600;--soft:#f3f3f3;--banner:#fff;--ok:#231f20;--ok-bg:#eaf5ef;--off:#6e6b6c;--off-bg:#f0f0f0;--bad:#b42318;--bad-bg:#fdeceb;--wa:#44a276;--warn:#231f20;--warn-bg:#fff4cc;--f-display:Jost,system-ui,Arial,sans-serif;--f-body:Jost,system-ui,Arial,sans-serif;--f-mono:Jost,system-ui,Arial,sans-serif;color-scheme:light}
+html,body{background:#fff!important}
+body{font-family:Jost,system-ui,Arial,sans-serif!important;font-size:16px;font-weight:400;color:#231f20;line-height:1.5}
+button,input,select,textarea{font-family:Jost,system-ui,Arial,sans-serif}
+body::after{content:"";position:fixed;right:-34px;bottom:-34px;width:150px;height:150px;z-index:-1;pointer-events:none;opacity:.3;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3E%3Cg fill='%23aaaaaa'%3E%3Cg id='r'%3E%3Ccircle cx='5' cy='5' r='2.2'/%3E%3Ccircle cx='15' cy='5' r='2.2'/%3E%3Ccircle cx='25' cy='5' r='2.2'/%3E%3Ccircle cx='35' cy='5' r='2.2'/%3E%3Ccircle cx='45' cy='5' r='2.2'/%3E%3C/g%3E%3Cuse href='%23r' y='10'/%3E%3Cuse href='%23r' y='20'/%3E%3Cuse href='%23r' y='30'/%3E%3Cuse href='%23r' y='40'/%3E%3C/g%3E%3C/svg%3E") no-repeat center/contain}
+@media print{body::after{display:none}}
+.top,header.top{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:8px 12px;padding:16px 0 0;border-bottom:0!important;margin-bottom:0}
+.top img,.brandrow img,.brand img{height:36px;width:auto;display:block}
+.brand small,.subt{display:none}
+.brandrow{display:flex;align-items:center}
+.tr{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.ver{font-size:12px;font-weight:400;letter-spacing:.06em;color:#6e6b6c;line-height:1}
+.seg{display:inline-flex;border:0!important;background:transparent!important;border-radius:0!important;gap:2px}
+.seg button{border:0!important;background:transparent!important;color:#231f20!important;padding:6px 8px!important;font-size:15px!important;font-weight:400;border-bottom:3px solid transparent!important;border-radius:0!important;cursor:pointer;min-height:32px}
+.seg button[aria-pressed="true"]{border-bottom-color:#44a276!important;font-weight:600}
+.ptitle{flex-basis:100%;position:relative;font-weight:300;font-size:22px;letter-spacing:.14em;text-transform:uppercase;color:#6e6b6c;padding:26px 0 14px;border-bottom:1px solid #231f20;margin:0 0 20px;line-height:1.2}
+.ptitle::after{content:"";position:absolute;left:0;bottom:-4px;width:44px;height:7px;background:#44a276}
+@media(max-width:420px){.ptitle{font-size:18px;letter-spacing:.1em}}
+.card,.panel,.stat,.ic,.entry{background:#fff!important;border:1px solid #dcdcdc!important;border-radius:8px!important;box-shadow:none!important}
+.card,.panel{padding:20px}
+.entry{background:#fff!important}
+h1,h2,.card h2,.panel h2,.gate h1{font-family:Jost,system-ui,Arial,sans-serif!important;font-weight:500!important;color:#231f20}
+.gate h1{font-size:24px;letter-spacing:.02em}
+.btn,button.go{min-height:44px;border-radius:8px!important;font-weight:500;border:1px solid #dcdcdc;background:#fff;color:#231f20;padding:9px 18px;transition:background .15s;text-decoration:none}
+.btn.small,.btn.s{min-height:36px;padding:6px 12px;font-size:14px}
+.btn:hover{border-color:#231f20}
+.btn.p,.btn.primary,button.go{background:#44a276!important;border-color:#44a276!important;color:#231f20!important;font-weight:600!important}
+.btn.p:hover,.btn.primary:hover,button.go:hover{background:#3a9068!important}
+.btn.d,.btn.danger{color:#b42318!important;border-color:#b42318!important;background:#fff!important}
+.btn[disabled],button.go:disabled{opacity:.5}
+:focus-visible{outline:2px solid #231f20!important;outline-offset:2px}
+input,select,textarea{border:1px solid #dcdcdc!important;border-radius:8px!important;background:#fff!important;font-size:16px;padding:10px 12px;min-height:44px}
+textarea{min-height:90px}
+input[type=checkbox]{min-height:0}
+label.f>span{font-family:Jost,system-ui,Arial,sans-serif!important;font-weight:500;font-size:13px!important;letter-spacing:.06em;text-transform:uppercase;color:#6e6b6c}
+.msg{border-radius:8px;font-weight:400;font-size:15px;background:#fdeceb;color:#b42318}
+.msg.ok,.ok{background:#eaf5ef;color:#231f20}
+.note,.small{color:#6e6b6c}
+a{color:#2b7a55}
+.avatar{box-shadow:none!important;border:1px solid #dcdcdc!important;background:#f3f3f3!important;color:#231f20!important}
+.avatar.bad{box-shadow:0 0 0 2px #b42318!important}
+.banner{display:none!important}
+.hero .avatar{margin-top:20px!important}
+.hero .body{padding-top:0}
+.stat.main{background:#fff!important;color:#231f20!important;border-bottom:3px solid #44a276!important}
+.stat.main .l{color:#6e6b6c!important;opacity:1}
+.stat[aria-pressed="true"],.ic[aria-pressed="true"]{outline:0!important;border-color:#44a276!important;box-shadow:inset 0 -3px 0 #44a276!important}
+.stat .n,.ic b{font-family:Jost,system-ui,Arial,sans-serif!important;font-weight:400!important}
+.stk{box-shadow:none!important;border-bottom:1px solid #dcdcdc;background:#fff!important}
+.badge{font-weight:500;font-size:13px;border-radius:99px}
+.empty{padding:34px 16px;text-align:center;color:#6e6b6c;text-transform:uppercase;letter-spacing:.1em;font-weight:300}
+.empty::before{content:"";display:block;width:56px;height:56px;margin:0 auto 12px;opacity:.5;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3E%3Cg fill='%23aaaaaa'%3E%3Cg id='r'%3E%3Ccircle cx='5' cy='5' r='2.2'/%3E%3Ccircle cx='15' cy='5' r='2.2'/%3E%3Ccircle cx='25' cy='5' r='2.2'/%3E%3Ccircle cx='35' cy='5' r='2.2'/%3E%3Ccircle cx='45' cy='5' r='2.2'/%3E%3C/g%3E%3Cuse href='%23r' y='10'/%3E%3Cuse href='%23r' y='20'/%3E%3Cuse href='%23r' y='30'/%3E%3Cuse href='%23r' y='40'/%3E%3C/g%3E%3C/svg%3E") no-repeat center/contain}
+@media print{.ptitle,.tr{display:none!important}}
 </style>
 </head>
 <body>
@@ -283,7 +337,7 @@ function refreshBad(){if(!S.showErr)return;S.miss=new Set(missingList().map(x=>x
 
 /* ---------- render ---------- */
 function topbar(){return `<div class="top"><div class="brand"><img src="${LOGO}" alt="EcoOils"><small>${esc(t("brand"))}<br>${esc(COMPANY)}</small></div>
- <div class="seg" role="group" aria-label="Language"><button data-a="lang" data-v="en" aria-pressed="${lang==="en"}">EN</button><button data-a="lang" data-v="id" aria-pressed="${lang==="id"}">ID</button></div></div>`}
+ <div class="tr"><div class="ver">v2.0</div><div class="seg" role="group" aria-label="Language"><button data-a="lang" data-v="en" aria-pressed="${lang==="en"}">EN</button><button data-a="lang" data-v="id" aria-pressed="${lang==="id"}">ID</button></div></div><div class="ptitle">HSSE Database</div></div>`}
 function waHtml(){return S.waOffer&&S.msgOk&&S.screen!=="gate"?`<div class="card"><h2>${esc(t("waT"))}</h2><p class="note" style="margin-top:0">${esc(t("waP"))}</p><div class="row"><button class="btn p" data-a="wa">${esc(t("waB"))}</button><button class="btn s" data-a="waX">&times;</button></div></div>`:""}
 function msgHtml(){return (S.msg?`<div class="msg ${S.msgOk?"ok":""}" role="status">${esc(S.msg)}</div>`:"")+waHtml()}
 
