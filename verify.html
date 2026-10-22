@@ -72,7 +72,7 @@ a{color:#2b7a55}
 .empty::before{content:"";display:block;width:56px;height:56px;margin:0 auto 12px;opacity:.5;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3E%3Cg fill='%23aaaaaa'%3E%3Cg id='r'%3E%3Ccircle cx='5' cy='5' r='2.2'/%3E%3Ccircle cx='15' cy='5' r='2.2'/%3E%3Ccircle cx='25' cy='5' r='2.2'/%3E%3Ccircle cx='35' cy='5' r='2.2'/%3E%3Ccircle cx='45' cy='5' r='2.2'/%3E%3C/g%3E%3Cuse href='%23r' y='10'/%3E%3Cuse href='%23r' y='20'/%3E%3Cuse href='%23r' y='30'/%3E%3Cuse href='%23r' y='40'/%3E%3C/g%3E%3C/svg%3E") no-repeat center/contain}
 @media print{.ptitle,.tr{display:none!important}}
 </style></head><body><div class="wrap">
-<div class="top"><img id="logo" alt="EcoOils"><div class="tr"><div class="ver">v2.0</div><div class="seg" role="group" aria-label="Language"><button data-v="en" aria-pressed="true">EN</button><button data-v="id" aria-pressed="false">ID</button></div></div><div class="ptitle" id="ptl">Certificate verification</div></div>
+<div class="top"><img id="logo" alt="EcoOils"><div class="tr"><div class="ver">v2.1</div><div class="seg" role="group" aria-label="Language"><button data-v="en" aria-pressed="true">EN</button><button data-v="id" aria-pressed="false">ID</button><button data-v="ms" aria-pressed="false">MS</button></div></div><div class="ptitle" id="ptl">Certificate verification</div></div>
 <div id="app"></div>
 <p class="small" id="foot"></p>
 </div>
@@ -100,13 +100,23 @@ const TX={
   notEmp:"Ini hanyalah Sertifikat Penghargaan. Pemegang sertifikat bukan karyawan langsung PT EcoOils Jaya Indonesia dan bertugas di Proyek sebagai personel HSSE yang dipekerjakan oleh Kontraktor Pelaksana yang disebutkan di atas. Dokumen ini bukan surat keterangan kerja atau pengalaman.",ctype:"Dokumen",cval:"Sertifikat Penghargaan",
   askH:"Minta EcoOils memverifikasi",askP:"Kirim pertanyaan Anda ke kantor HSSE EcoOils. Kami akan membalas ke email yang Anda isi.",who:"Nama Anda",em:"Email Anda",msg:"Pesan (opsional)",send:"Kirim permintaan",sent:"Permintaan terkirim. Kantor HSSE EcoOils akan membalas ke email Anda.",
   bad_email:"Masukkan email yang valid.",err:"Layanan verifikasi tidak dapat dihubungi. Silakan coba lagi.",busy:"Terlalu banyak permintaan. Silakan coba lagi nanti.",
-  foot:"EcoOils HSSE Database. Halaman ini hanya menampilkan rincian yang tercetak pada sertifikat."}
+  foot:"EcoOils HSSE Database. Halaman ini hanya menampilkan rincian yang tercetak pada sertifikat."},
+ ms:{ttl:"Pengesahan sijil",h:"Sahkan sijil",p:"Masukkan nombor sijil dan kod semakan yang tercetak pada sijil, atau imbas kod QR-nya.",no:"Nombor sijil",code:"Kod semakan",onlyApp:"Sijil penghargaan sahaja. Ini bukan pengesahan pekerjaan atau pengalaman.",chk:"Sahkan",chking:"Menyemak...",
+  valid:"Sah",revoked:"Dibatalkan",unknown:"Tidak dapat disahkan",
+  validP:"Sijil ini dikeluarkan oleh EcoOils. Semak bahawa butiran di bawah sepadan dengan sijil yang diberikan kepada anda.",
+  revokedP:"Sijil ini telah dibatalkan dan tidak boleh dijadikan rujukan.",
+  unkP:"Tiada sijil dengan nombor dan kod semakan ini dalam daftar EcoOils. Anggap ia tidak dikeluarkan, dan sila sahkan dengan EcoOils menggunakan borang di bawah.",
+  name:"Nama",pos:"Jawatan",emp:"Diambil bekerja oleh",proj:"Projek",per:"Tempoh dalam Projek",iss:"Dikeluarkan",to:"hingga",
+  notEmp:"Ini hanyalah Sijil Penghargaan. Pemegang sijil bukan pekerja langsung PT EcoOils Jaya Indonesia dan berkhidmat dalam Projek sebagai kakitangan HSSE yang diambil bekerja oleh Kontraktor Pelaksana yang dinamakan di atas. Ia bukan surat pekerjaan atau pengalaman.",ctype:"Dokumen",cval:"Sijil Penghargaan",
+  askH:"Minta EcoOils mengesahkan",askP:"Hantar soalan anda kepada pejabat HSSE EcoOils. Kami akan membalas ke e-mel yang anda berikan.",who:"Nama anda",em:"E-mel anda",msg:"Mesej (pilihan)",send:"Hantar permintaan",sent:"Permintaan dihantar. Pejabat HSSE EcoOils akan membalas ke e-mel anda.",
+  bad_email:"Sila masukkan e-mel yang sah.",err:"Tidak dapat menghubungi perkhidmatan pengesahan. Sila cuba lagi.",busy:"Terlalu banyak permintaan. Sila cuba lagi kemudian.",
+  foot:"EcoOils HSSE Database. Halaman ini hanya memaparkan butiran yang tercetak pada sijil."}
 };
-let lang="en";try{const l=localStorage.getItem("icv-lang");if(l==="id"||l==="en")lang=l}catch(e){}
+let lang="en";try{const l=localStorage.getItem("icv-lang");if(l==="id"||l==="en"||l==="ms")lang=l}catch(e){}
 const q=new URLSearchParams(location.search);
 const S={no:(q.get("c")||"").trim(),code:(q.get("k")||"").trim(),res:null,busy:false,err:"",sent:false};
 const t=k=>TX[lang][k]||k,esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const dF=i=>{if(!i)return"";const d=new Date(i+"T00:00:00");return isNaN(d)?i:d.toLocaleDateString(lang==="id"?"id-ID":"en-GB",{day:"numeric",month:"long",year:"numeric"})};
+const dF=i=>{if(!i)return"";const d=new Date(i+"T00:00:00");return isNaN(d)?i:d.toLocaleDateString(lang==="id"?"id-ID":lang==="ms"?"ms-MY":"en-GB",{day:"numeric",month:"long",year:"numeric"})};
 async function api(b){const r=await fetch(API,{method:"POST",body:JSON.stringify(b)});return r.json()}
 async function check(){
   S.busy=true;S.err="";S.sent=false;render();
